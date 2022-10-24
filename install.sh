@@ -27,6 +27,7 @@ mkdir -p ${INSTALL_DIR}/logs/elasticsearch_oai/
 
 cp ./configs/oai-elasticsearch.yml ${INSTALL_DIR}/configs/elasticsearch_oai/
 cp ./configs/item_mapping_es_v7 /configs/elasticsearch_oai/
+cp ./configs/init-fizoai-elasticsearch.sh ${INSTALL_DIR}/configs/elasticsearch_oai/
 
 chown -R 1000:1000 ${INSTALL_DIR}/data/elasticsearch_oai/
 chown -R 1000:1000 ${INSTALL_DIR}/configs/elasticsearch_oai/

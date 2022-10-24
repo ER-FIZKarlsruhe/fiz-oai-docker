@@ -1,11 +1,11 @@
 #############################################################
-# Init ElasticSearch
-#############################################################
-
-curl -v -X PUT -H 'Content-Type: application/json' --data "@item_mapping_es_v7" -i 'http://localhost:9200/item'
-
-#############################################################
 # Init Cassandra
 #############################################################
 
+until printf "" 2>>/dev/null >>/dev/tcp/cassandra/9042; do 
+    sleep 5;
+    echo "Waiting for cassandra...";
+done
 
+echo "Creating keyspace and table..."
+cqlsh cassandra -u cassandra -p cassandra -e "CREATE KEYSPACE IF NOT EXISTS fizoaibackend WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'};"

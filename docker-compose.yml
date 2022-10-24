@@ -36,6 +36,17 @@ services:
     ports:
     - '9200:9200'
 
+  elasticsearch-oai-setup:
+    hostname: elasticsearch-oai-setup
+    image: curlimages/curl:7.85.0
+    depends_on:
+    - elasticsearch-oai
+    command: sh /usr/share/elasticsearch/config/init-fizoai-elasticsearch.sh
+    volumes:
+    - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/usr/share/elasticsearch/config/init-fizoai-elasticsearch.sh:ro
+
+
+
   oai-backend:
     hostname: oai-backend
     image: docker.dev.fiz-karlsruhe.de/oai-backend:1.3-SNAPSHOT
