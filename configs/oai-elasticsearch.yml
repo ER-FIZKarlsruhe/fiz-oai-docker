@@ -71,7 +71,7 @@ transport.port: 9300
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
-cluster.initial_master_nodes: ["elasticsearch-oai-master"]
+#cluster.initial_master_nodes: ["elasticsearch-oai-master"]
 #
 # For more information, consult the discovery and cluster formation module documentation.
 #
