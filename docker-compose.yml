@@ -10,7 +10,7 @@ services:
     - ${OAI_DATA_FOLDER}/data/cassandra:/var/lib/cassandra/
     - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra.yaml:/etc/cassandra/cassandra.yaml
     - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra-env.sh:/etc/cassandra/cassandra-env.sh
-
+    - ${OAI_DATA_FOLDER}/configs/cassandra/init-fizoai-database.sh:/etc/cassandra/init-fizoai-database.sh
 
   elasticsearch-oai:
     hostname: elasticsearch-oai

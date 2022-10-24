@@ -16,6 +16,7 @@ mkdir -p ${INSTALL_DIR}/data/oai_provider/
 
 cp ./configs/cassandra.yaml ${INSTALL_DIR}/configs/cassandra/
 cp ./configs/cassandra-env.sh ${INSTALL_DIR}/configs/cassandra/
+cp ./configs/init-fizoai-database.sh ${INSTALL_DIR}/configs/cassandra/
 
 cp ./configs/oai-elasticsearch.yml ${INSTALL_DIR}/configs/elasticsearch_oai/
 
