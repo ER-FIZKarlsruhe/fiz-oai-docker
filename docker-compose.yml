@@ -1,6 +1,19 @@
 version: '3.3'
 services:
 
+  cassandra-oai:
+    hostname: cassandra-oai
+    image: cassandra:3.11
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    volumes:
+    - ${OAI_DATA_FOLDER}/data/cassandra_escidocng:/var/lib/cassandra/
+    - ${OAI_DATA_FOLDER}/configs/cassandra_escidocng/cassandra.yaml:/etc/cassandra/cassandra.yaml
+    - ${OAI_DATA_FOLDER}/configs/cassandra_escidocng/cassandra-env.sh:/etc/cassandra/cassandra-env.sh
+    - ${OAI_DATA_FOLDER}/configs/cassandra_escidocng/jmxremote.access:/opt/java/openjdk/lib/management/jmxremote.access
+    - ${OAI_DATA_FOLDER}/configs/cassandra_escidocng/jmxremote.password:/etc/cassandra/jmxremote.password
+
+
   elasticsearch-oai:
     hostname: elasticsearch-oai
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
@@ -8,15 +21,6 @@ services:
       bootstrap.memory_lock: "true"
       ES_JAVA_OPTS: "-Dlog4j2.formatMsgNoLookups=true -Xms2g -Xmx2g"
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 5
-        window: 60s
-      placement:
-        constraints:
-        - node.role == manager
     ulimits:
       memlock:
         soft: -1
@@ -34,17 +38,15 @@ services:
     - .catalina_env
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-    deploy:
-      placement:
-        constraints:
-        - node.role == worker
     depends_on:
     - cassandra-escidocng
     - elasticsearch-oai
     volumes:
     - ${OAI_DATA_FOLDER}/configs/oai_backend/fiz-oai-backend.properties:/usr/local/tomcat/conf/fiz-oai-backend.properties:ro
     - ${OAI_DATA_FOLDER}/logs/oai_backend/:/usr/local/tomcat/logs
-
+    ports:
+    - '8081:8080'
+    
 
   oai-provider:
     hostname: oai-provider
@@ -53,10 +55,6 @@ services:
     - .catalina_env
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-    deploy:
-      placement:
-        constraints:
-        - node.role == manager
     depends_on:
     - oai-backend
     volumes:
@@ -64,3 +62,5 @@ services:
     - ${OAI_DATA_FOLDER}/configs/oai_provider/logo.jpg:/usr/local/tomcat/conf/logo.jpg:ro
     - ${OAI_DATA_FOLDER}/configs/oai_provider/fiz-oai-provider-log4j.properties:/usr/local/tomcat/conf/fiz-oai-provider-log4j.properties:ro
     - ${OAI_DATA_FOLDER}/logs/oai_provider/:/usr/local/tomcat/logs
+    ports:
+    - '8080:8080'
