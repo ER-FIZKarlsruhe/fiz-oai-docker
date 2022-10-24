@@ -41,10 +41,10 @@ services:
     image: curlimages/curl:7.85.0
     depends_on:
     - elasticsearch-oai
-    command: sh /usr/share/elasticsearch/config/init-fizoai-elasticsearch.sh
+    command: sh /init-fizoai-elasticsearch.sh
     volumes:
-    - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/usr/share/elasticsearch/config/init-fizoai-elasticsearch.sh:ro
-
+    - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/init-fizoai-elasticsearch.sh:ro
+    - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/item_mapping_es_v7:/item_mapping_es_v7:ro
 
 
   oai-backend:
