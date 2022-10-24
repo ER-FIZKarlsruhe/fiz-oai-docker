@@ -1,0 +1,66 @@
+version: '3.3'
+services:
+
+  elasticsearch-oai:
+    hostname: elasticsearch-oai
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
+    environment:
+      bootstrap.memory_lock: "true"
+      ES_JAVA_OPTS: "-Dlog4j2.formatMsgNoLookups=true -Xms2g -Xmx2g"
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 60s
+      placement:
+        constraints:
+        - node.role == manager
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+    - ${OAI_DATA_FOLDER}/logs/elasticsearch_oai:/usr/share/elasticsearch/logs
+    - ${OAI_DATA_FOLDER}/data/elasticsearch_oai/es-data:/usr/share/elasticsearch/es-data
+    - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/oai-elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+
+
+  oai-backend:
+    hostname: oai-backend
+    image: ${DOCKER_REGISTRY}/oai-backend:${OAI_BACKEND_VERSION}
+    env_file:
+    - .catalina_env
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    deploy:
+      placement:
+        constraints:
+        - node.role == worker
+    depends_on:
+    - cassandra-escidocng
+    - elasticsearch-oai
+    volumes:
+    - ${OAI_DATA_FOLDER}/configs/oai_backend/fiz-oai-backend.properties:/usr/local/tomcat/conf/fiz-oai-backend.properties:ro
+    - ${OAI_DATA_FOLDER}/logs/oai_backend/:/usr/local/tomcat/logs
+
+
+  oai-provider:
+    hostname: oai-provider
+    image: ${DOCKER_REGISTRY}/oai-provider:${OAI_PROVIDER_VERSION}
+    env_file:
+    - .catalina_env
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    deploy:
+      placement:
+        constraints:
+        - node.role == manager
+    depends_on:
+    - oai-backend
+    volumes:
+    - ${OAI_DATA_FOLDER}/configs/oai_provider/oaicat.properties:/usr/local/tomcat/conf/oaicat.properties:ro
+    - ${OAI_DATA_FOLDER}/configs/oai_provider/logo.jpg:/usr/local/tomcat/conf/logo.jpg:ro
+    - ${OAI_DATA_FOLDER}/configs/oai_provider/fiz-oai-provider-log4j.properties:/usr/local/tomcat/conf/fiz-oai-provider-log4j.properties:ro
+    - ${OAI_DATA_FOLDER}/logs/oai_provider/:/usr/local/tomcat/logs
