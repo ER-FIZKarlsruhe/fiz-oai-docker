@@ -52,6 +52,5 @@ services:
     - oai-backend
     volumes:
     - ${OAI_DATA_FOLDER}/configs/oai_provider/oaicat.properties:/usr/local/tomcat/conf/oaicat.properties:ro
-    - ${OAI_DATA_FOLDER}/configs/oai_provider/logo.jpg:/usr/local/tomcat/conf/logo.jpg:ro
     ports:
     - '8080:8080'
