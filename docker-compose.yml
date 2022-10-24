@@ -12,6 +12,9 @@ services:
     - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra.yaml:/etc/cassandra/cassandra.yaml
     - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra-env.sh:/etc/cassandra/cassandra-env.sh
     - ${OAI_DATA_FOLDER}/configs/cassandra/init-fizoai-database.sh:/etc/cassandra/init-fizoai-database.sh
+    ports:
+    - '9042:9042'
+
 
   elasticsearch-oai:
     hostname: elasticsearch-oai
@@ -30,7 +33,8 @@ services:
     - ${OAI_DATA_FOLDER}/logs/elasticsearch_oai:/usr/share/elasticsearch/logs
     - ${OAI_DATA_FOLDER}/data/elasticsearch_oai/es-data:/usr/share/elasticsearch/es-data
     - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/oai-elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-
+    ports:
+    - '9200:9200'
 
   oai-backend:
     hostname: oai-backend
