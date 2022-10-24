@@ -55,8 +55,6 @@ services:
     - oai-backend
     links: 
     - "oai-backend"
-    networks:
-    - oai
     volumes:
     - ${OAI_DATA_FOLDER}/configs/oai_provider/oaicat.properties:/usr/local/tomcat/conf/oaicat.properties:ro
     ports:
