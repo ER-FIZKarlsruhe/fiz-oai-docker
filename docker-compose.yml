@@ -39,7 +39,7 @@ services:
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     depends_on:
-    - cassandra-escidocng
+    - cassandra-oai
     - elasticsearch-oai
     volumes:
     - ${OAI_DATA_FOLDER}/configs/oai_backend/fiz-oai-backend.properties:/usr/local/tomcat/conf/fiz-oai-backend.properties:ro
