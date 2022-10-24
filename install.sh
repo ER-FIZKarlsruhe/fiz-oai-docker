@@ -3,11 +3,17 @@ INSTALL_DIR=/data/fiz-oai-eng-d-vm08/fiz-oai/
 rm -rf ${INSTALL_DIR}
 
 mkdir -p ${INSTALL_DIR}/configs/cassandra/
+chown -R 999:999 ${INSTALL_DIR}/configs/cassandra/
 mkdir -p ${INSTALL_DIR}/data/cassandra/
+chown -R 999:999 ${INSTALL_DIR}/data/cassandra/
 
 mkdir -p ${INSTALL_DIR}/configs/elasticsearch_oai/
+chown -R 1000:1000 ${INSTALL_DIR}/configs/elasticsearch_oai/
+
 mkdir -p ${INSTALL_DIR}/data/elasticsearch_oai/
+chown -R 1000:1000 ${INSTALL_DIR}/data/elasticsearch_oai/
 mkdir -p ${INSTALL_DIR}/logs/elasticsearch_oai/
+chown -R 1000:1000 ${INSTALL_DIR}/logs/elasticsearch_oai/
 
 mkdir -p ${INSTALL_DIR}/configs/oai_backend/
 mkdir -p ${INSTALL_DIR}/data/oai_backend/
