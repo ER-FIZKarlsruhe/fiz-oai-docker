@@ -11,9 +11,19 @@ services:
     - ${OAI_DATA_FOLDER}/data/cassandra:/var/lib/cassandra/
     - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra.yaml:/etc/cassandra/cassandra.yaml
     - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra-env.sh:/etc/cassandra/cassandra-env.sh
-    - ${OAI_DATA_FOLDER}/configs/cassandra/init-fizoai-database.sh:/etc/cassandra/init-fizoai-database.sh
     ports:
     - '9042:9042'
+
+
+  cassandra-oai-setup:
+    hostname: cassandra-oai-setup
+    image: cassandra:3.11
+    depends_on:
+    - cassandra-oai
+    command: ["/wait-for-it.sh","cassandra-oai:9042","--", "sh", "/init-fizoai-database.sh"]
+    volumes:
+    - ${OAI_DATA_FOLDER}/configs/cassandra/init-fizoai-database.sh:/init-fizoai-database.sh:ro
+    - ${OAI_DATA_FOLDER}/configs/cassandra/wait-for-it.sh:/wait-for-it.sh:ro
 
 
   elasticsearch-oai:
@@ -42,6 +52,7 @@ services:
     depends_on:
     - elasticsearch-oai
     command: sh /init-fizoai-elasticsearch.sh
+    command: ["/wait-for-it.sh","elasticsearch-oai:9200","--", "sh", "/init-fizoai-elasticsearch.sh"]
     volumes:
     - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/init-fizoai-elasticsearch.sh:ro
     - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/item_mapping_es_v7:/item_mapping_es_v7:ro
