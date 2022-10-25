@@ -51,8 +51,8 @@ services:
     image: curlimages/curl:7.85.0
     depends_on:
     - elasticsearch-oai
-    command: sh /init-fizoai-elasticsearch.sh
-    command: ["/wait-for-it.sh","elasticsearch-oai:9200","--", "sh", "/init-fizoai-elasticsearch.sh"]
+    #command: ["/wait-for-it.sh","elasticsearch-oai:9200","--", "/init-fizoai-elasticsearch.sh"]
+    command: "/init-fizoai-elasticsearch.sh"
     volumes:
     - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/init-fizoai-elasticsearch.sh:ro
     - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/item_mapping_es_v7:/item_mapping_es_v7:ro
@@ -60,9 +60,10 @@ services:
 
   oai-backend:
     hostname: oai-backend
-    image: docker.dev.fiz-karlsruhe.de/oai-backend:1.3-SNAPSHOT
+    image: docker.dev.fiz-karlsruhe.de/oai-backend:1.2.4
     environment:
-      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
+    - "CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
     depends_on:
     - cassandra-oai
     - elasticsearch-oai
@@ -78,9 +79,10 @@ services:
 
   oai-provider:
     hostname: oai-provider
-    image: docker.dev.fiz-karlsruhe.de/oai-provider:1.3-SNAPSHOT
+    image: docker.dev.fiz-karlsruhe.de/oai-provider:1.2.2
     environment:
-      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
+    - "CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
     depends_on:
     - oai-backend
     links: 
