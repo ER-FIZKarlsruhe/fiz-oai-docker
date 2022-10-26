@@ -74,4 +74,8 @@ The only Service that should be connected to the internet is the Oai-Provider. Y
     </VirtualHost>
 
 
-# Backup
+# Cassandra Backup
+A cronjob is creating regalarly snapshots and backups of the cassandra database.
+You can find them here: INSTALL_DIR/data/cassandra-backup
+
+Please backup these files for desaster recovery
