@@ -11,8 +11,8 @@ services:
     - ${OAI_DATA_FOLDER}/data/cassandra:/var/lib/cassandra/
     - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra.yaml:/etc/cassandra/cassandra.yaml
     - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra-env.sh:/etc/cassandra/cassandra-env.sh
-    - ${OAI_DATA_FOLDER}/configs/cassandra_escidocng/jmxremote.access:/opt/java/openjdk/lib/management/jmxremote.access
-    - ${OAI_DATA_FOLDER}/configs/cassandra_escidocng/jmxremote.password:/etc/cassandra/jmxremote.password
+    - ${OAI_DATA_FOLDER}/configs/cassandra/jmxremote.access:/opt/java/openjdk/lib/management/jmxremote.access
+    - ${OAI_DATA_FOLDER}/configs/cassandra/jmxremote.password:/etc/cassandra/jmxremote.password
     ports:
     - '9042:9042'
 
