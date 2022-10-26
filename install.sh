@@ -22,6 +22,9 @@ cp ./configs/cassandra.yaml ${INSTALL_DIR}/configs/cassandra/
 cp ./configs/cassandra-env.sh ${INSTALL_DIR}/configs/cassandra/
 cp ./configs/init-fizoai-database.sh ${INSTALL_DIR}/configs/cassandra/
 cp ./configs/wait-for-it.sh ${INSTALL_DIR}/configs/cassandra/
+cp ./configs/jmxremote.access ${INSTALL_DIR}/configs/cassandra/
+cp ./configs/jmxremote.password ${INSTALL_DIR}/configs/cassandra/
+
 chmod +x ${INSTALL_DIR}/configs/cassandra/wait-for-it.sh
 chown -R 999:999 ${INSTALL_DIR}/data/
 chown -R 999:999 ${INSTALL_DIR}/configs/

@@ -14,7 +14,28 @@ sudo ./install.sh INSTAL_DIRECTORY
 cd INSTAL_DIRECTORY  
 sudo docker-compose up
 
+3) Change the password of the Cassandra database
 
+- Connect to cassandra  
+Retrieve cassandra containerId via  
+sudo docker container ls
+
+From the Docker-Host open bash in the container  
+sudo docker exec -it <cassandra containerId> bash  
+cqlsh -u cassandra
+
+- Set new Password via cqlsh shell  
+ALTER USER cassandra WITH PASSWORD 'NEW_PASSWORD';  
+
+
+4) Change cassandra password 
+- Update cassandra password for the oai-backend.  
+Edit INSTALL_DIR/configs/oai_backend/fiz-oai-backend.properties and change  
+cassandra.password='NEW_PASSWORD'
+
+- Update password for cassandra-backup  
+Edit INSTALL_DIR/.cassandra_dump_env and change  
+CASSANDRA_PWD='NEW_PASSWORD'
 
 # Getting started
 
