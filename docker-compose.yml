@@ -37,9 +37,8 @@ services:
     - ${OAI_DATA_FOLDER}/logs/cassandra-backup:/logs
     - ${OAI_DATA_FOLDER}/data/cassandra:/source_data
     - ${OAI_DATA_FOLDER}/data/cassandra-backup:/backup
-
     depends_on:
-    - cassandra-escidocng
+    - cassandra-oai
 
 
   elasticsearch-oai:
