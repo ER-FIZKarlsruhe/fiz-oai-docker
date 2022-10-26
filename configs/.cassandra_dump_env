@@ -7,5 +7,5 @@ ADMIN_EMAIL=
 LOGFILE=/logs/cron.log
 CASSANDRA_HOST=cassandra-oai
 CASSANDRA_PORT=7199
-CASSANDRA_USER=cassandra
+CASSANDRA_USER=fizoaibackend
 CASSANDRA_PWD=cassandra
