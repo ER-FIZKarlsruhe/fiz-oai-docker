@@ -35,7 +35,7 @@ cassandra.password='NEW_PASSWORD'
 
 - Update password for cassandra-backup  
 Edit INSTALL_DIR/.cassandra_dump_env and change  
-CASSANDRA_PWD='NEW_PASSWORD'
+CASSANDRA_PWD=NEW_PASSWORD
 
 # Getting started
 
@@ -47,25 +47,24 @@ Oai-Provider: http://localhost:8080/oai/
 Oai-Backend: http://localhost:8081/oai-backend/info/version
 
 ### Create formats
-You need at least the oai_dc format defined int the backend. This ofrmat is mandatory for all oai provider.
-The script examples\createFormats.sh shows you how to create formats via curl.
+You need at least the oai_dc format defined in the backend. This format is mandatory for all oai provider.
+The script examples/createFormats.sh shows you how to create formats via curl.
 
 ### Create crosswalks (needs jq package)
-If you want to automatically transfer your metadata into other formats, you can use crosswalks. 
-The example in examples\createCrosswalks.sh shows you how Radar metadata can be transformed into oai_dc and datacite via XSLT.
+If you want to automatically transform your metadata into other formats, you can use crosswalks. 
+The commands in examples/createCrosswalks.sh shows you how Radar metadata can be transformed into oai_dc and datacite via XSLT.
 
 ### Create items
 After creating at least the oai_dc format, you are able to send your metadata into the oai-backend.
-Have a look at examples\addItem.sh how to do this. The reuqest contain two parts  
-1) The xml metadata itself  
-2) An item description for the metadata in JSON
+Have a look at examples/addItem.sh. The curl command shows you how to create a multipart request to the backend. It contains of two parts  
+1) The xml metadata itself  (content)  
+2) An item description for the metadata in JSON (item)  
 
 
 
 # Security
-The FIZ-OAI has no security features, like authentication or autorization. If needed you have can adapt Basic-Auth to the service.
-
-The only Service that should be connected to the internet is the Oai-Provider. You should use vHost including a Reverse-Proxy for doing this:  
+The FIZ-OAI has no security features, like authentication or autorization. If needed you can adapt Basic-Auth to the service.
+The only Service allowed to be connected to the internet is the Oai-Provider. You should use vHost listening to 443 including a Reverse-Proxy and certificate for doing this:  
 
     <VirtualHost *:443>
         ServerName www.your-domain.edu
@@ -75,7 +74,7 @@ The only Service that should be connected to the internet is the Oai-Provider. Y
 
 
 # Cassandra Backup
-A cronjob is creating regalarly snapshots and backups of the cassandra database.
+A cronjob is creating regularly snapshots and backups of the cassandra database.
 You can find them here: INSTALL_DIR/data/cassandra-backup
 
-Please backup these files for desaster recovery
+You have to backup these files for disaster recovery!
