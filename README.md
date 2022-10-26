@@ -5,11 +5,12 @@
 - jq package (just needed for crosswalk examples)
 
 # Installation
-1) For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTAL_DIRECTORY
-
+1) For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTAL_DIRECTORY  
+  
 sudo ./install.sh INSTAL_DIRECTORY
 
 2) Running the application  
+  
 cd INSTAL_DIRECTORY  
 sudo docker-compose up
 
@@ -22,7 +23,7 @@ After starting the services you can call the following urls and see if the "oai-
 
 Oai-Provider: http://localhost:8080/oai/
 
-Oai-Backend: http://eng-d-vm08.fiz-karlsruhe.de:8081/oai-backend/info/version
+Oai-Backend: http://localhost:8081/oai-backend/info/version
 
 ### Create formats
 You need at least the oai_dc format defined int the backend. This ofrmat is mandatory for all oai provider.
