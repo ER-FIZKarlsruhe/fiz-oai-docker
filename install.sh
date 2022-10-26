@@ -27,6 +27,15 @@ chown -R 999:999 ${INSTALL_DIR}/data/
 chown -R 999:999 ${INSTALL_DIR}/configs/
 
 ###############################################################################
+# Init Cassandra Backup.
+###############################################################################
+mkdir -p ${INSTALL_DIR}/configs/cassandra-backup/
+mkdir -p ${INSTALL_DIR}/data/cassandra-backup/
+mkdir -p ${INSTALL_DIR}/logs/cassandra-backup/
+
+cp ./configs/.cassandra_dump_env ${INSTALL_DIR}
+
+###############################################################################
 # Init Elasticsearch. The container runs under the user_id 1000
 ###############################################################################
 

@@ -39,3 +39,18 @@ Have a look at examples\addItem.sh how to do this. The reuqest contain two parts
 1) The xml metadata itself  
 2) An item description for the metadata in JSON
 
+
+
+# Security
+The FIZ-OAI has no security features, like authentication or autorization. If needed you have can adapt Basic-Auth to the service.
+
+The only Service that should be connected to the internet is the Oai-Provider. You should use vHost including a Reverse-Proxy for doing this:  
+
+    <VirtualHost *:443>
+        ServerName www.your-domain.edu
+        ProxyPass /oai http://oai-provider:8080/oai
+        ProxyPassReverse /oai http://oai-provider:8080/oai
+    </VirtualHost>
+
+
+# Backup
