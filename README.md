@@ -21,7 +21,7 @@
   From the Docker-Host open bash in the container  
   host:/$> sudo docker exec -it cassandra_containerId bash  
   
-  Inside the container start the cqlsh with the default password
+  Inside the container start the cqlsh with the default password  
   *cassandra-oai:/$> cqlsh -u cassandra -p cassandra;*  
 
   Set new Password via cqlsh shell  
