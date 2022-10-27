@@ -25,7 +25,7 @@
   *cassandra-oai:/$> cqlsh -u cassandra -p cassandra;*  
 
   Set new Password via cqlsh shell  
-  *cassandra@cqlsh>> ALTER USER cassandra WITH PASSWORD 'NEW_PASSWORD';*  
+  *cassandra@cqlsh> ALTER USER cassandra WITH PASSWORD 'NEW_CASSANDRA_PASSWORD';*  
 
 
 - Set new cassandra password for the oai-backend container  
