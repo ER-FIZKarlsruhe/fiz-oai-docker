@@ -65,7 +65,7 @@ services:
 
   elasticsearch-oai-setup:
     hostname: elasticsearch-oai-setup
-    image: curlimages/curl:7.85.0
+    image: centos
     depends_on:
     - elasticsearch-oai
     command: ["/wait-for-it.sh","elasticsearch-oai:9200","--", "sh", "/init-fizoai-elasticsearch.sh"]
