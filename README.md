@@ -5,29 +5,31 @@
 - jq package (just needed for crosswalk examples)
 
 # Installation
-1) For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTAL_DIRECTORY  
-  *sudo ./install.sh INSTAL_DIRECTORY*  
+- For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTAL_DIRECTORY  
+  *host:/$> sudo ./install.sh INSTAL_DIRECTORY*  
 
-2) Running the application  
-  *cd INSTAL_DIRECTORY*  
-  *sudo docker-compose up*  
+- Running the application  
+  *host:/$> cd INSTAL_DIRECTORY*  
+  *host:/$> sudo docker-compose up*  
 
 ### Change cassandra password
 
 - Set new password in the database  
   Retrieve cassandra containerId via  
-  *sudo docker container ls*  
+  *host:/$> sudo docker container ls*  
 
   From the Docker-Host open bash in the container  
-  sudo docker exec -it <cassandra containerId> bash  
-  *cqlsh -u cassandra*
+  host:/$> sudo docker exec -it cassandra_containerId bash  
+  
+  Inside the container start the cqlsh with the default password
+  *cassandra-oai:/$> cqlsh -u cassandra -p cassandra;*  
 
   Set new Password via cqlsh shell  
-  *ALTER USER cassandra WITH PASSWORD 'NEW_PASSWORD';*  
+  *cassandra@cqlsh>> ALTER USER cassandra WITH PASSWORD 'NEW_PASSWORD';*  
 
 
-- Change cassandra password for the oai-backend container  
-  Update cassandra password for the oai-backend.  
+- Set new cassandra password for the oai-backend container  
+
   Edit INSTALL_DIR/configs/oai_backend/fiz-oai-backend.properties and change  
   *cassandra.password=NEW_CASSANDRA_PASSWORD*  
 
