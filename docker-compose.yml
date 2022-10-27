@@ -68,12 +68,11 @@ services:
     image: curlimages/curl:7.85.0
     depends_on:
     - elasticsearch-oai
-    #command: ["/wait-for-it.sh","elasticsearch-oai:9200","--", "/init-fizoai-elasticsearch.sh"]
-    command: "/init-fizoai-elasticsearch.sh"
+    command: ["/wait-for-it.sh","elasticsearch-oai:9200","--", "sh", "/init-fizoai-elasticsearch.sh"]
     volumes:
     - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/init-fizoai-elasticsearch.sh:ro
     - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/item_mapping_es_v7:/item_mapping_es_v7:ro
-
+    - ${OAI_DATA_FOLDER}/configs/cassandra/wait-for-it.sh:/wait-for-it.sh:ro
 
   oai-backend:
     hostname: oai-backend
