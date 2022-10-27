@@ -6,36 +6,31 @@
 
 # Installation
 1) For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTAL_DIRECTORY  
-  
-sudo ./install.sh INSTAL_DIRECTORY
+  *sudo ./install.sh INSTAL_DIRECTORY*  
 
 2) Running the application  
-  
-cd INSTAL_DIRECTORY  
-sudo docker-compose up
+  *cd INSTAL_DIRECTORY*  
+  *sudo docker-compose up*  
 
-3) Change the password of the Cassandra database
+### Change cassandra password
 
-- Connect to cassandra  
-Retrieve cassandra containerId via  
-sudo docker container ls
+- Set new password in the database  
+  Retrieve cassandra containerId via  
+  *sudo docker container ls*  
 
-From the Docker-Host open bash in the container  
-sudo docker exec -it <cassandra containerId> bash  
-cqlsh -u cassandra
+  From the Docker-Host open bash in the container  
+  sudo docker exec -it <cassandra containerId> bash  
+  *cqlsh -u cassandra*
 
-- Set new Password via cqlsh shell  
-ALTER USER cassandra WITH PASSWORD 'NEW_PASSWORD';  
+  Set new Password via cqlsh shell  
+  *ALTER USER cassandra WITH PASSWORD 'NEW_PASSWORD';*  
 
 
-4) Change cassandra password  
-- Update cassandra password for the oai-backend.  
-Edit INSTALL_DIR/configs/oai_backend/fiz-oai-backend.properties and change  
-cassandra.password='NEW_PASSWORD'
+- Change cassandra password for the oai-backend container  
+  Update cassandra password for the oai-backend.  
+  Edit INSTALL_DIR/configs/oai_backend/fiz-oai-backend.properties and change  
+  *cassandra.password=NEW_CASSANDRA_PASSWORD*  
 
-- Update password for cassandra-backup  
-Edit INSTALL_DIR/.cassandra_dump_env and change  
-CASSANDRA_PWD=NEW_PASSWORD
 
 # Getting started
 
@@ -83,9 +78,9 @@ You can find them here: INSTALL_DIR/data/cassandra-backup
 For security reason you must change the default JMX password.
 
 - Update cassandra JMX password for backup container  
-Edit INSTALL_DIR/.cassandra_dump_env and change  
-CASSANDRA_PWD=cassandra=NEW_JMX_PASSWORD
+  Edit INSTALL_DIR/.cassandra_dump_env and change  
+  *CASSANDRA_PWD=NEW_JMX_PASSWORD*  
 
-- Update JMX remote password for cassandra container
-Edit INSTALL_DIR/configs/cassandra/jmxremote.password and change  
-fizoaibackend NEW_JMX_PASSWORD
+- Update JMX remote password for cassandra container  
+  Edit INSTALL_DIR/configs/cassandra/jmxremote.password and change  
+  *fizoaibackend NEW_JMX_PASSWORD*  
