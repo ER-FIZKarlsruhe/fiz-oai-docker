@@ -85,4 +85,21 @@ For security reason you must change the default JMX password.
 
 - Update JMX remote password for cassandra container  
   Edit INSTALL_DIR/configs/cassandra/jmxremote.password and change  
-  *fizoaibackend NEW_JMX_PASSWORD*  
+  *fizoaibackend NEW_JMX_PASSWORD*
+  
+  
+# Branding
+There are several parameters to configure the provider ui via
+INSTALL_DIR/configs/oai_provider/oaicat.properties
+
+```
+branding.logo=/data/www/logo.jpg
+branding.header.color=#97c6f4
+branding.service.name=Testinstanz FIZ OAI Provider
+branding.service.url=https://www.fiz-karlsruhe.de
+branding.welcome.text=This is the FIZ OAI provider
+branding.imprint.url=
+branding.privacy.url=
+branding.font.family=Verdana, Arial, Helvetica, sans-serif;
+branding.font.color=#013476;
+```
