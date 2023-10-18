@@ -4,11 +4,13 @@
 - jq package (just needed for crosswalk examples)
 
 # Installation
-- For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTAL_DIRECTORY  
-  *host:/$> sudo ./install.sh INSTAL_DIRECTORY*  
+- For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTALL_DIRECTORY  
+- INSTALL_DIRECTORY must be an absolute path!
+
+  *host:/$> sudo ./install.sh INSTALL_DIRECTORY*  
 
 - Running the application  
-  *host:/$> cd INSTAL_DIRECTORY*  
+  *host:/$> cd INSTALL_DIRECTORY*  
   *host:/$> sudo docker compose up*  
 
 ### Change cassandra password
