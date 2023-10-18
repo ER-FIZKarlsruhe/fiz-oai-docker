@@ -1,7 +1,6 @@
 # Prerequirements
 - Linux OS system
-- Docker package installed
-- Docker-Compose package installed
+- The easiest and recommended way is to make sure you have the latest version of Docker Desktop, which bundles the Docker Engine and Docker CLI platform including Compose V2
 - jq package (just needed for crosswalk examples)
 
 # Installation
@@ -10,7 +9,7 @@
 
 - Running the application  
   *host:/$> cd INSTAL_DIRECTORY*  
-  *host:/$> sudo docker-compose up*  
+  *host:/$> sudo docker compose up*  
 
 ### Change cassandra password
 
