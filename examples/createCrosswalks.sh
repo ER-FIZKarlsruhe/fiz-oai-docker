@@ -15,4 +15,4 @@ curl -X GET 'http://localhost:8081/oai-backend/crosswalk'
 
 
 #Delete specific crosswalk
-curl -v -X DELETE http://localhost:8081/oai-backend/crosswalk/Radar2OAI_DC_v09
+#curl -v -X DELETE http://localhost:8081/oai-backend/crosswalk/Radar2OAI_DC_v09
