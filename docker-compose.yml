@@ -3,7 +3,7 @@ services:
 
   cassandra-oai:
     hostname: cassandra-oai
-    image: cassandra:3.11
+    image: cassandra:4.1
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     user: "999:999"
@@ -19,7 +19,7 @@ services:
 
   cassandra-oai-setup:
     hostname: cassandra-oai-setup
-    image: cassandra:3.11
+    image: cassandra:4.1
     depends_on:
     - cassandra-oai
     command: ["/wait-for-it.sh","cassandra-oai:9042","--", "sh", "/init-fizoai-database.sh"]
@@ -29,7 +29,7 @@ services:
 
   cassandra-backup:
     hostname: cassandra-backup
-    image: docker.dev.fiz-karlsruhe.de/cassandra-backup:1
+    image: docker.dev.fiz-karlsruhe.de/cassandra-backup:5.2
     environment:
       JAVA_OPTS: "-Dlog4j2.formatMsgNoLookups=true"
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
@@ -45,7 +45,7 @@ services:
 
   elasticsearch-oai:
     hostname: elasticsearch-oai
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.13
     environment:
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Xms2g -Xmx2g"
