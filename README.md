@@ -12,12 +12,6 @@
 - Running the application  
   *host:/$> cd INSTALL_DIRECTORY*  
   *host:/$> sudo docker compose up*  
-  
-  On some systems there is a timing problem!
-  You will see 500 errors when calling verbs in the oai-provider.
-  
-  Until we fix this bug you'll have to restart the oai-provider after a short amount of time. 
-  *host:/$> sudo docker compose restart oai-provider*  
 
 ### Change cassandra password
 

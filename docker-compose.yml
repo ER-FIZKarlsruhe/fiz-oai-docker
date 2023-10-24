@@ -95,7 +95,7 @@ services:
 
   oai-provider:
     hostname: oai-provider
-    image: docker.dev.fiz-karlsruhe.de/oai-provider:1.2.6
+    image: docker.dev.fiz-karlsruhe.de/oai-provider:1.2.7
     environment:
     - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
     - "CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
