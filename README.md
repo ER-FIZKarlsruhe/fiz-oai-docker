@@ -11,7 +11,7 @@
 
 - Running the application  
   *host:/$> cd INSTALL_DIRECTORY*  
-  *host:/$> sudo docker compose up*  
+  *host:/$> sudo docker compose up*
 
 ### Change cassandra password
 

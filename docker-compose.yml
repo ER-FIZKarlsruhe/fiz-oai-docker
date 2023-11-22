@@ -3,7 +3,7 @@ services:
 
   cassandra-oai:
     hostname: cassandra-oai
-    image: cassandra:4.1
+    image: cassandra:${CASSANDRA_VERSION}
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     user: "999:999"
@@ -16,20 +16,19 @@ services:
     ports:
     - '9042:9042'
 
-
   cassandra-oai-setup:
     hostname: cassandra-oai-setup
-    image: cassandra:4.1
+    image: cassandra:${CASSANDRA_VERSION}
     depends_on:
     - cassandra-oai
-    command: ["/wait-for-it.sh","cassandra-oai:9042","--", "sh", "/init-fizoai-database.sh"]
+    command: ["/wait-for-it.sh","cassandra-oai:9042","-t","0","--", "sh", "/init-fizoai-database.sh"]
     volumes:
     - ${OAI_DATA_FOLDER}/configs/cassandra/init-fizoai-database.sh:/init-fizoai-database.sh:ro
     - ${OAI_DATA_FOLDER}/configs/cassandra/wait-for-it.sh:/wait-for-it.sh:ro
 
   cassandra-backup:
     hostname: cassandra-backup
-    image: docker.dev.fiz-karlsruhe.de/cassandra-backup:5.2
+    image: docker.dev.fiz-karlsruhe.de/cassandra-backup:${CASSANDRA_BACKUP_VERSION}
     environment:
       JAVA_OPTS: "-Dlog4j2.formatMsgNoLookups=true"
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
@@ -45,12 +44,17 @@ services:
 
   elasticsearch-oai:
     hostname: elasticsearch-oai
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.13
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTICSEARCH_VERSION}
     environment:
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Xms2g -Xmx2g"
+      - "ES_JAVA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Xms${ELASTICSEARCH_MEMORY} -Xmx${ELASTICSEARCH_MEMORY}"
       - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
       - discovery.type=single-node
+    healthcheck:
+      test: ["CMD", "/checkEsHealth.sh"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
     ulimits:
       memlock:
         soft: -1
@@ -60,6 +64,7 @@ services:
     - ${OAI_DATA_FOLDER}/logs/elasticsearch_oai:/usr/share/elasticsearch/logs
     - ${OAI_DATA_FOLDER}/data/elasticsearch_oai/es-data:/usr/share/elasticsearch/es-data
     - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/oai-elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/checkEsHealth.sh:/checkEsHealth.sh
     ports:
     - '9200:9200'
 
@@ -67,23 +72,26 @@ services:
     hostname: elasticsearch-oai-setup
     image: centos
     depends_on:
-    - elasticsearch-oai
-    command: ["/wait-for-it.sh","elasticsearch-oai:9200","--", "sh", "/init-fizoai-elasticsearch.sh"]
+      elasticsearch-oai:
+        condition: service_healthy
+    command: ["sh", "/init-fizoai-elasticsearch.sh"]
     volumes:
     - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/init-fizoai-elasticsearch.sh:ro
-    - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/item_mapping_es_v7:/item_mapping_es_v7:ro
+    - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/item_mapping_es_v${ELASTICSEARCH_MAPPING_VERSION}:/item_mapping_es:ro
     - ${OAI_DATA_FOLDER}/configs/cassandra/wait-for-it.sh:/wait-for-it.sh:ro
 
   oai-backend:
     hostname: oai-backend
-    image: docker.dev.fiz-karlsruhe.de/oai-backend:1.2.10
+    image: docker.dev.fiz-karlsruhe.de/oai-backend:${OAI_BACKEND_VERSION}
     environment:
     - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
     - "CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
     depends_on:
-    - cassandra-oai
-    - elasticsearch-oai
-    links: 
+      cassandra-oai-setup:
+        condition: service_completed_successfully
+      elasticsearch-oai-setup:
+        condition: service_completed_successfully
+    links:
     - "cassandra-oai"
     - "elasticsearch-oai"
     volumes:
@@ -91,17 +99,17 @@ services:
     - ${OAI_DATA_FOLDER}/logs/oai_backend/:/usr/local/tomcat/logs
     ports:
     - '8081:8080'
-    
+
 
   oai-provider:
     hostname: oai-provider
-    image: docker.dev.fiz-karlsruhe.de/oai-provider:1.2.7
+    image: docker.dev.fiz-karlsruhe.de/oai-provider:${OAI_FRONTEND_VERSION}
     environment:
     - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
     - "CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
     depends_on:
     - oai-backend
-    links: 
+    links:
     - "oai-backend"
     volumes:
     - ${OAI_DATA_FOLDER}/configs/oai_provider/oaicat.properties:/usr/local/tomcat/conf/oaicat.properties:ro
