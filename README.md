@@ -55,18 +55,6 @@ You can find them here: INSTALL_DIR/data/cassandra-backup
 
 *You have to backup INSTALL_DIR/data/cassandra-backup for disaster recovery!*
 
-### Change cassandra JMX password  
-For security reason you must change the default JMX password.
-
-- Update cassandra JMX password for backup container  
-  Edit INSTALL_DIR/.cassandra_dump_env and change  
-  *CASSANDRA_PWD=NEW_JMX_PASSWORD*  
-
-- Update JMX remote password for cassandra container  
-  Edit INSTALL_DIR/configs/cassandra/jmxremote.password and change  
-  *fizoaibackend NEW_JMX_PASSWORD*
-  
-  
 # Branding
 There are several parameters to configure the provider ui via
 INSTALL_DIR/configs/oai_provider/oaicat.properties
