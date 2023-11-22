@@ -96,6 +96,7 @@ mkdir -p ${INSTALL_DIR}/data/oai_backend/
 mkdir -p ${INSTALL_DIR}/logs/oai_backend/
 
 cp ./configs/oai_backend/fiz-oai-backend.properties ${INSTALL_DIR}/configs/oai_backend/
+cp ./configs/oai_backend/checkBackendHealth.sh ${INSTALL_DIR}/configs/oai_backend/
 
 chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${INSTALL_DIR}/data/oai_backend/
 chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${INSTALL_DIR}/configs/oai_backend/
@@ -125,7 +126,7 @@ cp ./configs/.env ${INSTALL_DIR}
 echo "OAI_DATA_FOLDER=${INSTALL_DIR}" >> ${INSTALL_DIR}/.env
 
 ###############################################################################
-# Replace @@CASSANDRA_PASSWORD@@
+# Replace @@CASSANDRA_SUPERUSER_PASSWORD@@ and @@CASSANDRA_PASSWORD@@
 ###############################################################################
 sed -i "s/@@CASSANDRA_SUPERUSER_PASSWORD@@/${CASSANDRA_SUPERUSER_PASSWORD}/g" ${INSTALL_DIR}/configs/cassandra/init-fizoai-database.sh
 sed -i "s/@@CASSANDRA_PASSWORD@@/${CASSANDRA_PASSWORD}/g" ${INSTALL_DIR}/configs/cassandra/init-fizoai-database.sh

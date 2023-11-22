@@ -91,12 +91,18 @@ services:
         condition: service_completed_successfully
       elasticsearch-oai-setup:
         condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "/checkBackendHealth.sh"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
     links:
     - "cassandra-oai"
     - "elasticsearch-oai"
     volumes:
     - ${OAI_DATA_FOLDER}/configs/oai_backend/fiz-oai-backend.properties:/usr/local/tomcat/conf/fiz-oai-backend.properties:ro
     - ${OAI_DATA_FOLDER}/logs/oai_backend/:/usr/local/tomcat/logs
+    - ${OAI_DATA_FOLDER}/configs/oai_backend/checkBackendHealth.sh:/checkBackendHealth.sh
     ports:
     - '8081:8080'
 
@@ -108,7 +114,8 @@ services:
     - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
     - "CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
     depends_on:
-    - oai-backend
+      oai-backend:
+        condition: service_healthy
     links:
     - "oai-backend"
     volumes:

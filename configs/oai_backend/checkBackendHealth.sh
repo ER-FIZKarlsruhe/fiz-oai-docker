@@ -1,13 +1,13 @@
 #!/bin/bash
 
-URL="http://localhost:9200/_cluster/health?wait_for_status=green&timeout=1s"
+URL="http://oai-backend:8080/oai-backend/info/version"
 
 response=$(curl -L --noproxy '*' --write-out %{http_code} --silent --output /dev/null $URL)
 if [[ "$response" -eq 200 ]]; then
-  echo "Elasticsearch Status is GREEN"
+  echo "Backend Status is OK"
   exit 0
 else
-  echo "Waiting for Elasticsearch Status GREEN"
+  echo "Waiting for Backend Status OK"
   exit 1
 fi
 
