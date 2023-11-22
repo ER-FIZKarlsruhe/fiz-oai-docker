@@ -7,33 +7,11 @@
 - For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTALL_DIRECTORY  
 - INSTALL_DIRECTORY must be an absolute path!
 
-  *host:/$> sudo ./install.sh INSTALL_DIRECTORY*  
+  *host:/$> sudo ./install.sh INSTALL_DIRECTORY CASSANDRA_SUPERUSER_PASSWORD CASSANDRA_PASSWORD*  
 
 - Running the application  
   *host:/$> cd INSTALL_DIRECTORY*  
   *host:/$> sudo docker compose up*
-
-### Change cassandra password
-
-- Set new password in the database  
-  Retrieve cassandra containerId via  
-  *host:/$> sudo docker container ls*  
-
-  From the Docker-Host open bash in the container  
-  host:/$> sudo docker exec -it cassandra_containerId bash  
-  
-  Inside the container start the cqlsh with the default password  
-  *cassandra-oai:/$> cqlsh -u cassandra -p cassandra;*  
-
-  Set new Password via cqlsh shell  
-  *cassandra@cqlsh> ALTER USER cassandra WITH PASSWORD 'NEW_CASSANDRA_PASSWORD';*  
-
-
-- Set new cassandra password for the oai-backend container  
-
-  Edit INSTALL_DIR/configs/oai_backend/fiz-oai-backend.properties and change  
-  *cassandra.password=NEW_CASSANDRA_PASSWORD*  
-
 
 # Getting started
 

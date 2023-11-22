@@ -131,3 +131,4 @@ sed -i "s/@@CASSANDRA_SUPERUSER_PASSWORD@@/${CASSANDRA_SUPERUSER_PASSWORD}/g" ${
 sed -i "s/@@CASSANDRA_PASSWORD@@/${CASSANDRA_PASSWORD}/g" ${INSTALL_DIR}/configs/cassandra/init-fizoai-database.sh
 sed -i "s/@@CASSANDRA_PASSWORD@@/${CASSANDRA_PASSWORD}/g" ${INSTALL_DIR}/configs/cassandra/jmxremote.password
 sed -i "s/@@CASSANDRA_PASSWORD@@/${CASSANDRA_PASSWORD}/g" ${INSTALL_DIR}/configs/oai_backend/fiz-oai-backend.properties
+sed -i "s/@@CASSANDRA_PASSWORD@@/${CASSANDRA_PASSWORD}/g" ${INSTALL_DIR}/.cassandra_dump_env
