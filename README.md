@@ -6,34 +6,41 @@
 # Installation
 - For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTALL_DIRECTORY  
 - INSTALL_DIRECTORY must be an absolute path!
+- CASSANDRA_SUPERUSER_PASSWORD Password for the default-superuser with name "cassandra"
+- CASSANDRA_PASSWORD Password for the User "fizoaibackend"
 
-  *host:/$> sudo ./install.sh INSTALL_DIRECTORY*  
+  *host:/$> sudo ./install.sh INSTALL_DIRECTORY CASSANDRA_SUPERUSER_PASSWORD CASSANDRA_PASSWORD*
 
+# Netwok-Strategies
+- To write Data and configure OAI-Provider, decide if you want to access the OAI-Backend externally or Docker-Network-Internally.
+- Access OAI-Backend externally:
+  - Edit docker-compose.yml
+    - Add port-mapping to oai-backend
+      ```
+      ports:
+      - '8081:8080'
+      ```
+- Access OAI-Backend Docker-Network-Internally, join FIZ-OAI into existing Network
+  - Check running Networks
+      ```
+      docker network ls
+      ```
+  - Edit docker-compose.yml
+    - Join FIZ-OAI to exisiting Network
+        ```
+        networks:
+          fizoai:
+            external:
+              name: <existing_network_name>
+        ```
+    - Add fizoai-Network to oai-backend
+        ```
+        networks:
+          - httpdtest-ref
+        ```
 - Running the application  
   *host:/$> cd INSTALL_DIRECTORY*  
-  *host:/$> sudo docker compose up*  
-
-### Change cassandra password
-
-- Set new password in the database  
-  Retrieve cassandra containerId via  
-  *host:/$> sudo docker container ls*  
-
-  From the Docker-Host open bash in the container  
-  host:/$> sudo docker exec -it cassandra_containerId bash  
-  
-  Inside the container start the cqlsh with the default password  
-  *cassandra-oai:/$> cqlsh -u cassandra -p cassandra;*  
-
-  Set new Password via cqlsh shell  
-  *cassandra@cqlsh> ALTER USER cassandra WITH PASSWORD 'NEW_CASSANDRA_PASSWORD';*  
-
-
-- Set new cassandra password for the oai-backend container  
-
-  Edit INSTALL_DIR/configs/oai_backend/fiz-oai-backend.properties and change  
-  *cassandra.password=NEW_CASSANDRA_PASSWORD*  
-
+  *host:/$> sudo docker compose up*
 
 # Getting started
 
@@ -77,18 +84,6 @@ You can find them here: INSTALL_DIR/data/cassandra-backup
 
 *You have to backup INSTALL_DIR/data/cassandra-backup for disaster recovery!*
 
-### Change cassandra JMX password  
-For security reason you must change the default JMX password.
-
-- Update cassandra JMX password for backup container  
-  Edit INSTALL_DIR/.cassandra_dump_env and change  
-  *CASSANDRA_PWD=NEW_JMX_PASSWORD*  
-
-- Update JMX remote password for cassandra container  
-  Edit INSTALL_DIR/configs/cassandra/jmxremote.password and change  
-  *fizoaibackend NEW_JMX_PASSWORD*
-  
-  
 # Branding
 There are several parameters to configure the provider ui via
 INSTALL_DIR/configs/oai_provider/oaicat.properties
