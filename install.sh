@@ -122,8 +122,20 @@ chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${INSTALL_DIR}/logs/oai
 ###############################################################################
 
 cp docker-compose.yml ${INSTALL_DIR}
+cp docker-compose4swarm.yml ${INSTALL_DIR}
 cp ./configs/.env ${INSTALL_DIR}
 echo "OAI_DATA_FOLDER=${INSTALL_DIR}" >> ${INSTALL_DIR}/.env
+
+#Set Environment
+touch -a /etc/environment
+while read line; do
+  if [[ ! $line =~ [^[:space:]] ]] || [[ $line = \#* ]]; then
+    continue
+  fi
+  keyValue=(${line//=/ })
+  sed -i "/^${keyValue[0]}/d" /etc/environment
+  echo $line >> /etc/environment
+done < "${INSTALL_DIR}/.env"
 
 ###############################################################################
 # Replace @@CASSANDRA_SUPERUSER_PASSWORD@@ and @@CASSANDRA_PASSWORD@@

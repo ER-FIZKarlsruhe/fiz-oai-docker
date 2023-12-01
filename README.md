@@ -4,14 +4,18 @@
 - jq package (just needed for crosswalk examples)
 
 # Installation
-- For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTALL_DIRECTORY  
+- Checkout this Git-Project onto docker-machine
+- Ensure if you have sudo all rights on the machine.
+- For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTALL_DIRECTORY
+  - *host:/$> **sudo** ./install.sh INSTALL_DIRECTORY CASSANDRA_SUPERUSER_PASSWORD CASSANDRA_PASSWORD*
+- If you want to start with docker swarm, you have to set the environment with:
+  - *host:/$> set -a; . /etc/environment; set +a;*
+
 - INSTALL_DIRECTORY must be an absolute path!
 - CASSANDRA_SUPERUSER_PASSWORD Password for the default-superuser with name "cassandra"
 - CASSANDRA_PASSWORD Password for the User "fizoaibackend"
 
-  *host:/$> sudo ./install.sh INSTALL_DIRECTORY CASSANDRA_SUPERUSER_PASSWORD CASSANDRA_PASSWORD*
-
-# Netwok-Strategies
+# Network-Strategies
 - To write Data and configure OAI-Provider, decide if you want to access the OAI-Backend externally or Docker-Network-Internally.
 - Access OAI-Backend externally:
   - Edit docker-compose.yml
@@ -33,11 +37,7 @@
             external:
               name: <existing_network_name>
         ```
-    - Add fizoai-Network to oai-backend
-        ```
-        networks:
-          - httpdtest-ref
-        ```
+
 - Running the application  
   *host:/$> cd INSTALL_DIRECTORY*  
   *host:/$> sudo docker compose up*

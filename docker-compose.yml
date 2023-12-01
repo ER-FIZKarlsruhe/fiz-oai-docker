@@ -3,10 +3,12 @@ services:
 
   cassandra-oai:
     hostname: cassandra-oai
-    image: cassandra:${CASSANDRA_VERSION}
+    image: cassandra:${OAI_CASSANDRA_VERSION}
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     user: "999:999"
+    networks:
+      - fizoai
     volumes:
     - ${OAI_DATA_FOLDER}/data/cassandra:/var/lib/cassandra/
     - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra.yaml:/etc/cassandra/cassandra.yaml
@@ -18,22 +20,26 @@ services:
 
   cassandra-oai-setup:
     hostname: cassandra-oai-setup
-    image: cassandra:${CASSANDRA_VERSION}
+    image: cassandra:${OAI_CASSANDRA_VERSION}
     depends_on:
     - cassandra-oai
     command: ["/wait-for-it.sh","cassandra-oai:9042","-t","0","--", "sh", "/init-fizoai-database.sh"]
+    networks:
+      - fizoai
     volumes:
     - ${OAI_DATA_FOLDER}/configs/cassandra/init-fizoai-database.sh:/init-fizoai-database.sh:ro
     - ${OAI_DATA_FOLDER}/configs/cassandra/wait-for-it.sh:/wait-for-it.sh:ro
 
   cassandra-backup:
     hostname: cassandra-backup
-    image: docker.dev.fiz-karlsruhe.de/cassandra-backup:${CASSANDRA_BACKUP_VERSION}
+    image: docker.dev.fiz-karlsruhe.de/cassandra-backup:${OAI_CASSANDRA_BACKUP_VERSION}
     environment:
       JAVA_OPTS: "-Dlog4j2.formatMsgNoLookups=true"
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     env_file:
     - .cassandra_dump_env
+    networks:
+      - fizoai
     volumes:
     - ${OAI_DATA_FOLDER}/logs/cassandra-backup:/logs
     - ${OAI_DATA_FOLDER}/data/cassandra:/source_data
@@ -44,10 +50,10 @@ services:
 
   elasticsearch-oai:
     hostname: elasticsearch-oai
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTICSEARCH_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${OAI_ELASTICSEARCH_VERSION}
     environment:
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Xms${ELASTICSEARCH_MEMORY} -Xmx${ELASTICSEARCH_MEMORY}"
+      - "ES_JAVA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Xms${OAI_ELASTICSEARCH_MEMORY} -Xmx${OAI_ELASTICSEARCH_MEMORY}"
       - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
       - discovery.type=single-node
     healthcheck:
@@ -60,6 +66,8 @@ services:
         soft: -1
         hard: -1
     user: "1000:1000"
+    networks:
+      - fizoai
     volumes:
     - ${OAI_DATA_FOLDER}/logs/elasticsearch_oai:/usr/share/elasticsearch/logs
     - ${OAI_DATA_FOLDER}/data/elasticsearch_oai/es-data:/usr/share/elasticsearch/es-data
@@ -75,9 +83,11 @@ services:
       elasticsearch-oai:
         condition: service_healthy
     command: ["sh", "/init-fizoai-elasticsearch.sh"]
+    networks:
+      - fizoai
     volumes:
     - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/init-fizoai-elasticsearch.sh:ro
-    - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/item_mapping_es_v${ELASTICSEARCH_MAPPING_VERSION}:/item_mapping_es:ro
+    - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/item_mapping_es_v${OAI_ELASTICSEARCH_MAPPING_VERSION}:/item_mapping_es:ro
     - ${OAI_DATA_FOLDER}/configs/cassandra/wait-for-it.sh:/wait-for-it.sh:ro
 
   oai-backend:
@@ -96,9 +106,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 20
-    links:
-    - "cassandra-oai"
-    - "elasticsearch-oai"
+    networks:
+      - fizoai
     volumes:
     - ${OAI_DATA_FOLDER}/configs/oai_backend/fiz-oai-backend.properties:/usr/local/tomcat/conf/fiz-oai-backend.properties:ro
     - ${OAI_DATA_FOLDER}/logs/oai_backend/:/usr/local/tomcat/logs
@@ -116,10 +125,15 @@ services:
     depends_on:
       oai-backend:
         condition: service_healthy
-    links:
-    - "oai-backend"
+    networks:
+      - fizoai
     volumes:
     - ${OAI_DATA_FOLDER}/configs/oai_provider/oaicat.properties:/usr/local/tomcat/conf/oaicat.properties:ro
     - ${OAI_DATA_FOLDER}/logs/oai_provider/:/usr/local/tomcat/logs
     ports:
     - '8080:8080'
+
+networks:
+  fizoai:
+    driver: overlay
+    attachable: true

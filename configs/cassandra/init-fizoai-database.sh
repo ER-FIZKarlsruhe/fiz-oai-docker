@@ -3,7 +3,7 @@
 #############################################################
 
 echo "Creating keyspace + user fizoaibackend, change password of user cassandra ..."
-sleep 15
+sleep 20
 cqlsh cassandra-oai 9042 -u cassandra -p cassandra -e "CREATE ROLE IF NOT EXISTS fizoaibackend WITH SUPERUSER = false AND LOGIN = true AND PASSWORD = '@@CASSANDRA_PASSWORD@@';"
 
 cqlsh cassandra-oai 9042 -u cassandra -p cassandra -e "CREATE KEYSPACE IF NOT EXISTS fizoaibackend WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'};"
