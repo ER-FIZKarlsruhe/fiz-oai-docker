@@ -38,7 +38,7 @@
               name: <existing_network_name>
         ```
 
-- Running the application  
+# Running the application  
   *host:/$> cd INSTALL_DIRECTORY*  
   *host:/$> sudo docker compose up*
 
