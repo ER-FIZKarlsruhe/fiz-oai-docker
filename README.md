@@ -51,8 +51,11 @@ Oai-Provider: http://localhost:8080/oai/
 
 Oai-Backend: http://localhost:8081/oai-backend/info/version
 
+## Create Data in Cassandra-Database (Formats, Crosswalks)
+Example Scripts are copied to INSTALL_DIRECTORY/examples
+Check them and then execute them.
+
 ### Create formats
-You need at least the oai_dc format defined in the backend. This format is mandatory for all oai provider.
 The script examples/createFormats.sh shows you how to create formats via curl.
 
 ### Create crosswalks (needs jq package)
