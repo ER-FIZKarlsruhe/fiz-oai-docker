@@ -15,8 +15,6 @@ services:
       - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra-env.sh:/etc/cassandra/cassandra-env.sh
       - ${OAI_DATA_FOLDER}/configs/cassandra/jmxremote.access:/opt/java/openjdk/lib/management/jmxremote.access
       - ${OAI_DATA_FOLDER}/configs/cassandra/jmxremote.password:/etc/cassandra/jmxremote.password
-    ports:
-      - '9042:9042'
 
   cassandra-oai-setup:
     hostname: cassandra-oai-setup
@@ -68,8 +66,6 @@ services:
       - ${OAI_DATA_FOLDER}/data/elasticsearch_oai/es-data:/usr/share/elasticsearch/es-data
       - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/oai-elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/checkEsHealth.sh:/checkEsHealth.sh
-    ports:
-      - '9200:9200'
 
   elasticsearch-oai-setup:
     hostname: elasticsearch-oai-setup
@@ -99,8 +95,6 @@ services:
       - ${OAI_DATA_FOLDER}/configs/oai_backend/fiz-oai-backend.properties:/usr/local/tomcat/conf/fiz-oai-backend.properties:ro
       - ${OAI_DATA_FOLDER}/logs/oai_backend/:/usr/local/tomcat/logs
       - ${OAI_DATA_FOLDER}/configs/oai_backend/checkBackendHealth.sh:/checkBackendHealth.sh
-    ports:
-      - '8081:8080'
 
 
   oai-provider:
@@ -116,8 +110,6 @@ services:
     volumes:
       - ${OAI_DATA_FOLDER}/configs/oai_provider/oaicat.properties:/usr/local/tomcat/conf/oaicat.properties:ro
       - ${OAI_DATA_FOLDER}/logs/oai_provider/:/usr/local/tomcat/logs
-    ports:
-      - '8080:8080'
 
 networks:
   fizoai:

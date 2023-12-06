@@ -1,21 +1,23 @@
 #INSTALL_DIR=/data/fiz-oai-eng-d-vm08/fiz-oai/
 
+if [ -n "$1" ] && [ -n "$2" ] && [ -n "$3" ] && [ -n "$4" ]; then
+  echo "FIZ-OAI provider will be installed to ${INSTALL_DIR}!"
+else
+  echo "Wrong install-parameters. Call"
+  echo "./install.sh <INSTALL_DIR> <HOSTURL> <CASSANDRA_SUPERUSER_PASSWORD> <CASSANDRA_PASSWORD>"
+  exit 22
+fi
+
 ADMIN_USERNAME=admin
+ADMIN_GROUPNAME=admin
 OAI_BACKEND_GROUPID=8007
 OAI_PROVIDER_GROUPID=8008
 CASSANDRA_GROUPID=999
 ELASTICSEARCH_GROUPID=1000
 INSTALL_DIR=$1
-CASSANDRA_SUPERUSER_PASSWORD=$2
-CASSANDRA_PASSWORD=$3
-
-if [ -n "$1" ] && [ -n "$2" ] && [ -n "$3" ]; then
-  echo "FIZ-OAI provider will be installed to ${INSTALL_DIR}!"
-else
-  echo "Wrong install-parameters. Call"
-  echo "./install.sh <INSTALLATION_PATH> <CASSANDRA_SUPERUSER_PASSWORD> <CASSANDRA_PASSWORD>"
-  exit 22
-fi
+HOSTURL=$((echo $2|sed -r 's/([\$\.\*\/\[\\^])/\\\1/g'|sed 's/[]]/\[]]/g')>&1)
+CASSANDRA_SUPERUSER_PASSWORD=$3
+CASSANDRA_PASSWORD=$4
 
 ###########################################################################
 # Add groups and users
@@ -73,7 +75,7 @@ cp ./configs/docker-env/.cassandra_dump_env ${INSTALL_DIR}
 
 mkdir -p ${INSTALL_DIR}/configs/elasticsearch_oai/
 mkdir -p ${INSTALL_DIR}/data/elasticsearch_oai/es-data/
-mkdir -p ${INSTALL_DIR}/data/elasticsearch_escidocng/backup/
+mkdir -p ${INSTALL_DIR}/data/elasticsearch_oai/backup/
 mkdir -p ${INSTALL_DIR}/logs/elasticsearch_oai/
 
 cp ./configs/elasticsearch_oai/oai-elasticsearch.yml ${INSTALL_DIR}/configs/elasticsearch_oai/
@@ -136,6 +138,17 @@ while read line; do
   sed -i "/^${keyValue[0]}/d" /etc/environment
   echo $line >> /etc/environment
 done < "${INSTALL_DIR}/.env"
+
+###############################################################################
+# Copy examples
+###############################################################################
+mkdir -p ${INSTALL_DIR}/examples/
+cp examples/* ${INSTALL_DIR}/examples
+sed -i "s/@@HOSTURL@@/${HOSTURL}/g" ${INSTALL_DIR}/examples/createFormats.sh
+sed -i "s/@@HOSTURL@@/${HOSTURL}/g" ${INSTALL_DIR}/examples/createCrosswalks.sh
+sed -i "s/@@HOSTURL@@/${HOSTURL}/g" ${INSTALL_DIR}/examples/createCrosswalks.sh
+chown -R ${ADMIN_USERNAME}:${ADMIN_GROUPNAME} ${INSTALL_DIR}/examples
+chmod +x ${INSTALL_DIR}/examples/*.sh
 
 ###############################################################################
 # Replace @@CASSANDRA_SUPERUSER_PASSWORD@@ and @@CASSANDRA_PASSWORD@@

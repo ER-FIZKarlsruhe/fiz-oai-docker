@@ -7,7 +7,7 @@
 - Checkout this Git-Project onto docker-machine
 - Ensure if you have sudo all rights on the machine.
 - For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTALL_DIRECTORY
-  - *host:/$> **sudo** ./install.sh INSTALL_DIRECTORY CASSANDRA_SUPERUSER_PASSWORD CASSANDRA_PASSWORD*
+  - *host:/$> **sudo** ./install.sh INSTALL_DIRECTORY HOSTURL(<protocol://name>) CASSANDRA_SUPERUSER_PASSWORD CASSANDRA_PASSWORD*
 - If you want to start with docker swarm, you have to set the environment with:
   - *host:/$> set -a; . /etc/environment; set +a;*
 
