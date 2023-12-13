@@ -126,7 +126,7 @@ chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${INSTALL_DIR}/logs/oai
 cp docker-compose.yml ${INSTALL_DIR}
 cp docker-compose4swarm.yml ${INSTALL_DIR}
 cp ./configs/.env ${INSTALL_DIR}
-echo "\nOAI_DATA_FOLDER=${INSTALL_DIR}" >> ${INSTALL_DIR}/.env
+echo "OAI_DATA_FOLDER=${INSTALL_DIR}" >> ${INSTALL_DIR}/.env
 
 #Set Environment
 touch -a /etc/environment
@@ -146,7 +146,7 @@ mkdir -p ${INSTALL_DIR}/examples/
 cp examples/* ${INSTALL_DIR}/examples
 sed -i "s/@@BACKEND_URL@@/${BACKEND_URL}/g" ${INSTALL_DIR}/examples/createFormats.sh
 sed -i "s/@@BACKEND_URL@@/${BACKEND_URL}/g" ${INSTALL_DIR}/examples/createCrosswalks.sh
-sed -i "s/@@BACKEND_URL@@/${BACKEND_URL}/g" ${INSTALL_DIR}/examples/createCrosswalks.sh
+sed -i "s/@@BACKEND_URL@@/${BACKEND_URL}/g" ${INSTALL_DIR}/examples/addItem.sh
 chown -R ${ADMIN_USERNAME}:${ADMIN_GROUPNAME} ${INSTALL_DIR}/examples
 chmod +x ${INSTALL_DIR}/examples/*.sh
 
