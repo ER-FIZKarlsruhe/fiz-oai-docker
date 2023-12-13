@@ -4,7 +4,7 @@ if [ -n "$1" ] && [ -n "$2" ] && [ -n "$3" ] && [ -n "$4" ]; then
   echo "FIZ-OAI provider will be installed to ${INSTALL_DIR}!"
 else
   echo "Wrong install-parameters. Call"
-  echo "./install.sh <INSTALL_DIR> <HOSTURL> <CASSANDRA_SUPERUSER_PASSWORD> <CASSANDRA_PASSWORD>"
+  echo "./install.sh <INSTALL_DIR> <BACKEND_URL> <CASSANDRA_SUPERUSER_PASSWORD> <CASSANDRA_PASSWORD>"
   exit 22
 fi
 
@@ -15,7 +15,7 @@ OAI_PROVIDER_GROUPID=8008
 CASSANDRA_GROUPID=999
 ELASTICSEARCH_GROUPID=1000
 INSTALL_DIR=$1
-HOSTURL=$((echo $2|sed -r 's/([\$\.\*\/\[\\^])/\\\1/g'|sed 's/[]]/\[]]/g')>&1)
+BACKEND_URL=$((echo $2|sed -r 's/([\$\.\*\/\[\\^])/\\\1/g'|sed 's/[]]/\[]]/g')>&1)
 CASSANDRA_SUPERUSER_PASSWORD=$3
 CASSANDRA_PASSWORD=$4
 
@@ -144,9 +144,9 @@ done < "${INSTALL_DIR}/.env"
 ###############################################################################
 mkdir -p ${INSTALL_DIR}/examples/
 cp examples/* ${INSTALL_DIR}/examples
-sed -i "s/@@HOSTURL@@/${HOSTURL}/g" ${INSTALL_DIR}/examples/createFormats.sh
-sed -i "s/@@HOSTURL@@/${HOSTURL}/g" ${INSTALL_DIR}/examples/createCrosswalks.sh
-sed -i "s/@@HOSTURL@@/${HOSTURL}/g" ${INSTALL_DIR}/examples/createCrosswalks.sh
+sed -i "s/@@BACKEND_URL@@/${BACKEND_URL}/g" ${INSTALL_DIR}/examples/createFormats.sh
+sed -i "s/@@BACKEND_URL@@/${BACKEND_URL}/g" ${INSTALL_DIR}/examples/createCrosswalks.sh
+sed -i "s/@@BACKEND_URL@@/${BACKEND_URL}/g" ${INSTALL_DIR}/examples/createCrosswalks.sh
 chown -R ${ADMIN_USERNAME}:${ADMIN_GROUPNAME} ${INSTALL_DIR}/examples
 chmod +x ${INSTALL_DIR}/examples/*.sh
 

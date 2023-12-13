@@ -7,11 +7,12 @@
 - Checkout this Git-Project onto docker-machine
 - Ensure if you have sudo all rights on the machine.
 - For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTALL_DIRECTORY
-  - *host:/$> **sudo** ./install.sh INSTALL_DIRECTORY HOSTURL(<protocol://name>) CASSANDRA_SUPERUSER_PASSWORD CASSANDRA_PASSWORD*
+  - *host:/$> **sudo** ./install.sh INSTALL_DIRECTORY BACKEND_URL CASSANDRA_SUPERUSER_PASSWORD CASSANDRA_PASSWORD*
 - If you want to start with docker swarm, you have to set the environment with:
   - *host:/$> set -a; . /etc/environment; set +a;*
 
 - INSTALL_DIRECTORY must be an absolute path!
+- BACKEND_URL the base URL of the backend without path <protocol://hostname:port>, e.g "http://localhost:8080"  or "http://mydomain:80"
 - CASSANDRA_SUPERUSER_PASSWORD Password for the default-superuser with name "cassandra"
 - CASSANDRA_PASSWORD Password for the User "fizoaibackend"
 
