@@ -1,5 +1,3 @@
-#INSTALL_DIR=/data/fiz-oai-eng-d-vm08/fiz-oai/
-
 if [ -n "$1" ] && [ -n "$2" ] && [ -n "$3" ] && [ -n "$4" ]; then
   echo "FIZ-OAI provider will be installed to ${INSTALL_DIR}!"
 else
@@ -15,7 +13,7 @@ OAI_PROVIDER_GROUPID=8008
 CASSANDRA_GROUPID=999
 ELASTICSEARCH_GROUPID=1000
 INSTALL_DIR=$1
-BACKEND_URL=$((echo $2|sed -r 's/([\$\.\*\/\[\\^])/\\\1/g'|sed 's/[]]/\[]]/g')>&1)
+BACKEND_URL=$2
 CASSANDRA_SUPERUSER_PASSWORD=$3
 CASSANDRA_PASSWORD=$4
 
@@ -45,7 +43,6 @@ usermod -a -G ${ELASTICSEARCH_GROUPID} ${ADMIN_USERNAME} > /dev/null 2>&1
 ###############################################################################
 # Init Cassandra. The container runs under the user_id CASSANDRA_GROUPID
 ###############################################################################
-
 mkdir -p ${INSTALL_DIR}/configs/cassandra/
 mkdir -p ${INSTALL_DIR}/data/cassandra/
 
@@ -72,7 +69,6 @@ cp ./configs/docker-env/.cassandra_dump_env ${INSTALL_DIR}
 ###############################################################################
 # Init Elasticsearch. The container runs under the user_id ELASTICSEARCH_GROUPID
 ###############################################################################
-
 mkdir -p ${INSTALL_DIR}/configs/elasticsearch_oai/
 mkdir -p ${INSTALL_DIR}/data/elasticsearch_oai/es-data/
 mkdir -p ${INSTALL_DIR}/data/elasticsearch_oai/backup/
@@ -92,7 +88,6 @@ chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${INSTALL_DIR}/logs/e
 ###############################################################################
 # Init oai_backend. The container runs under the user_id ${OAI_BACKEND_GROUPID}
 ###############################################################################
-
 mkdir -p ${INSTALL_DIR}/configs/oai_backend/
 mkdir -p ${INSTALL_DIR}/data/oai_backend/
 mkdir -p ${INSTALL_DIR}/logs/oai_backend/
@@ -107,7 +102,6 @@ chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${INSTALL_DIR}/logs/oai_b
 ###############################################################################
 # Init oai_provider. The container runs under the user_id ${OAI_PROVIDER_GROUPID}
 ###############################################################################
-
 mkdir -p ${INSTALL_DIR}/configs/oai_provider/
 mkdir -p ${INSTALL_DIR}/data/oai_provider/
 mkdir -p ${INSTALL_DIR}/logs/oai_provider/
@@ -118,11 +112,9 @@ chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${INSTALL_DIR}/data/oai
 chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${INSTALL_DIR}/configs/oai_provider/
 chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${INSTALL_DIR}/logs/oai_provider/
 
-
 ###############################################################################
 # Init docker-compose
 ###############################################################################
-
 cp docker-compose.yml ${INSTALL_DIR}
 cp docker-compose4swarm.yml ${INSTALL_DIR}
 cp ./configs/.env ${INSTALL_DIR}
@@ -144,17 +136,17 @@ done < "${INSTALL_DIR}/.env"
 ###############################################################################
 mkdir -p ${INSTALL_DIR}/examples/
 cp examples/* ${INSTALL_DIR}/examples
-sed -i "s/@@BACKEND_URL@@/${BACKEND_URL}/g" ${INSTALL_DIR}/examples/createFormats.sh
-sed -i "s/@@BACKEND_URL@@/${BACKEND_URL}/g" ${INSTALL_DIR}/examples/createCrosswalks.sh
-sed -i "s/@@BACKEND_URL@@/${BACKEND_URL}/g" ${INSTALL_DIR}/examples/addItem.sh
+sed -i "s|@@BACKEND_URL@@|${BACKEND_URL}|g" ${INSTALL_DIR}/examples/createFormats.sh
+sed -i "s|@@BACKEND_URL@@|${BACKEND_URL}|g" ${INSTALL_DIR}/examples/createCrosswalks.sh
+sed -i "s|@@BACKEND_URL@@|${BACKEND_URL}|g" ${INSTALL_DIR}/examples/addItem.sh
 chown -R ${ADMIN_USERNAME}:${ADMIN_GROUPNAME} ${INSTALL_DIR}/examples
 chmod +x ${INSTALL_DIR}/examples/*.sh
 
 ###############################################################################
 # Replace @@CASSANDRA_SUPERUSER_PASSWORD@@ and @@CASSANDRA_PASSWORD@@
 ###############################################################################
-sed -i "s/@@CASSANDRA_SUPERUSER_PASSWORD@@/${CASSANDRA_SUPERUSER_PASSWORD}/g" ${INSTALL_DIR}/configs/cassandra/init-fizoai-database.sh
-sed -i "s/@@CASSANDRA_PASSWORD@@/${CASSANDRA_PASSWORD}/g" ${INSTALL_DIR}/configs/cassandra/init-fizoai-database.sh
-sed -i "s/@@CASSANDRA_PASSWORD@@/${CASSANDRA_PASSWORD}/g" ${INSTALL_DIR}/configs/cassandra/jmxremote.password
-sed -i "s/@@CASSANDRA_PASSWORD@@/${CASSANDRA_PASSWORD}/g" ${INSTALL_DIR}/configs/oai_backend/fiz-oai-backend.properties
-sed -i "s/@@CASSANDRA_PASSWORD@@/${CASSANDRA_PASSWORD}/g" ${INSTALL_DIR}/.cassandra_dump_env
+sed -i "s|@@CASSANDRA_SUPERUSER_PASSWORD@@|${CASSANDRA_SUPERUSER_PASSWORD}|g" ${INSTALL_DIR}/configs/cassandra/init-fizoai-database.sh
+sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${INSTALL_DIR}/configs/cassandra/init-fizoai-database.sh
+sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${INSTALL_DIR}/configs/cassandra/jmxremote.password
+sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${INSTALL_DIR}/configs/oai_backend/fiz-oai-backend.properties
+sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${INSTALL_DIR}/.cassandra_dump_env
