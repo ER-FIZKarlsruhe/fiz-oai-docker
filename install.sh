@@ -126,7 +126,7 @@ chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${INSTALL_DIR}/logs/oai
 cp docker-compose.yml ${INSTALL_DIR}
 cp docker-compose4swarm.yml ${INSTALL_DIR}
 cp ./configs/.env ${INSTALL_DIR}
-sed -i "s/@@OAI_DATA_FOLDER@@/${INSTALL_DIR}/g" ${INSTALL_DIR}/.env
+sed -i "s|@@OAI_DATA_FOLDER@@|${INSTALL_DIR}|g" ${INSTALL_DIR}/.env
 
 #Set Environment
 touch -a /etc/environment
