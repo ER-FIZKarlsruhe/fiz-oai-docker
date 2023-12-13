@@ -42,6 +42,11 @@
 # Running the application  
   *host:/$> cd INSTALL_DIRECTORY*  
   *host:/$> sudo docker compose up*
+OR
+  *host:/$> docker stack deploy -c /data/docker/dev0102/oai/docker-compose4swarm.yml oai
+
+NOTE: When using docker-swarm, no ports are opened. So you need an Webserver in an Docker-Container in the Network. 
+Then proxyPass to the hostnames noted in docker-compose4swarm.yml
 
 # Getting started
 

@@ -122,7 +122,7 @@ sed -i "s|@@OAI_DATA_FOLDER@@|${INSTALL_DIR}|g" ${INSTALL_DIR}/.env
 
 #Set Environment
 touch -a /etc/environment
-while read line; do
+while read line || [ -n "$line" ]; do
   if [[ ! $line =~ [^[:space:]] ]] || [[ $line = \#* ]]; then
     continue
   fi
@@ -141,6 +141,12 @@ sed -i "s|@@BACKEND_URL@@|${BACKEND_URL}|g" ${INSTALL_DIR}/examples/createCrossw
 sed -i "s|@@BACKEND_URL@@|${BACKEND_URL}|g" ${INSTALL_DIR}/examples/addItem.sh
 chown -R ${ADMIN_USERNAME}:${ADMIN_GROUPNAME} ${INSTALL_DIR}/examples
 chmod +x ${INSTALL_DIR}/examples/*.sh
+
+###############################################################################
+# Write install.sh.cmd
+###############################################################################
+touch -a ${INSTALL_DIR}/install.sh.cmd
+echo "install.sh ${INSTALL_DIR} ${BACKEND_URL} ${CASSANDRA_SUPERUSER_PASSWORD} ${CASSANDRA_PASSWORD}" >> ${INSTALL_DIR}/install.sh.cmd
 
 ###############################################################################
 # Replace @@CASSANDRA_SUPERUSER_PASSWORD@@ and @@CASSANDRA_PASSWORD@@
