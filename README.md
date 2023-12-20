@@ -6,13 +6,13 @@
 # Installation
 - Checkout this Git-Project onto docker-machine
 - Ensure if you have sudo all rights on the machine.
-- For installation execute the following command. It will prepare the folder structure and configuration for the application in the given INSTALL_DIRECTORY
-  - *host:/$> **sudo** ./install.sh INSTALL_DIRECTORY BACKEND_URL CASSANDRA_SUPERUSER_PASSWORD CASSANDRA_PASSWORD*
+- For installation execute the following command. It will prepare the folder structure and configuration for the application in the given OAI_INSTALL_DIRECTORY_ENV
+  - *host:/$> **sudo** ./install.sh OAI_INSTALL_DIRECTORY_ENV OAI_EXTERNAL_BACKEND_URL CASSANDRA_SUPERUSER_PASSWORD CASSANDRA_PASSWORD*
 - If you want to start with docker swarm, you have to set the environment with:
   - *host:/$> set -a; . /etc/environment; set +a;*
 
-- INSTALL_DIRECTORY must be an absolute path!
-- BACKEND_URL the base URL of the backend without path <protocol://hostname:port>, e.g "http://localhost:8080"  or "http://mydomain:80"
+- OAI_INSTALL_DIRECTORY_ENV must be an absolute path!
+- OAI_EXTERNAL_BACKEND_URL the base URL of the backend without path <protocol://hostname:port>, e.g "http://localhost:8080"  or "http://mydomain:80"
 - CASSANDRA_SUPERUSER_PASSWORD Password for the default-superuser with name "cassandra"
 - CASSANDRA_PASSWORD Password for the User "fizoaibackend"
 
@@ -40,7 +40,7 @@
         ```
 
 # Running the application  
-  *host:/$> cd INSTALL_DIRECTORY*  
+  *host:/$> cd OAI_INSTALL_DIRECTORY_ENV*  
   *host:/$> sudo docker compose up*
 OR
   *host:/$> docker stack deploy -c /data/docker/dev0102/oai/docker-compose4swarm.yml oai
@@ -58,7 +58,7 @@ Oai-Provider: http://localhost:8080/oai/
 Oai-Backend: http://localhost:8081/oai-backend/info/version
 
 ## Create Data in Cassandra-Database (Formats, Crosswalks)
-Example Scripts are copied to INSTALL_DIRECTORY/examples
+Example Scripts are copied to OAI_INSTALL_DIRECTORY_ENV/examples
 Check them and then execute them.
 
 ### Create formats
@@ -89,13 +89,13 @@ The only Service allowed to be connected to the internet is the Oai-Provider. Yo
 
 # Cassandra Backup
 A cronjob is creating regularly snapshots and backups of the cassandra database.
-You can find them here: INSTALL_DIR/data/cassandra-backup
+You can find them here: OAI_OAI_INSTALL_DIRECTORY_ENV_ENV/data/cassandra-backup
 
-*You have to backup INSTALL_DIR/data/cassandra-backup for disaster recovery!*
+*You have to backup OAI_OAI_INSTALL_DIRECTORY_ENV_ENV/data/cassandra-backup for disaster recovery!*
 
 # Branding
 There are several parameters to configure the provider ui via
-INSTALL_DIR/configs/oai_provider/oaicat.properties
+OAI_INSTALL_DIRECTORY_ENV/configs/oai_provider/oaicat.properties
 
 ```
 branding.logo=/data/www/logo.jpg

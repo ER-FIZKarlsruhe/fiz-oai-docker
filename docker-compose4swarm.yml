@@ -1,57 +1,12 @@
 version: '3.3'
 services:
 
-  cassandra-oai:
-    hostname: cassandra-oai
-    image: cassandra:${OAI_CASSANDRA_VERSION}
-    environment:
-      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-    user: "999:999"
-    networks:
-      - fizoai
-    volumes:
-      - ${OAI_DATA_FOLDER}/data/cassandra:/var/lib/cassandra/
-      - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra.yaml:/etc/cassandra/cassandra.yaml
-      - ${OAI_DATA_FOLDER}/configs/cassandra/cassandra-env.sh:/etc/cassandra/cassandra-env.sh
-      - ${OAI_DATA_FOLDER}/configs/cassandra/jmxremote.access:/opt/java/openjdk/lib/management/jmxremote.access
-      - ${OAI_DATA_FOLDER}/configs/cassandra/jmxremote.password:/etc/cassandra/jmxremote.password
-
-  cassandra-oai-setup:
-    hostname: cassandra-oai-setup
-    image: cassandra:${OAI_CASSANDRA_VERSION}
-    depends_on:
-      - cassandra-oai
-    command: ["/wait-for-it.sh","cassandra-oai:9042","-t","0","--", "sh", "/init-fizoai-database.sh"]
-    networks:
-      - fizoai
-    volumes:
-      - ${OAI_DATA_FOLDER}/configs/cassandra/init-fizoai-database.sh:/init-fizoai-database.sh:ro
-      - ${OAI_DATA_FOLDER}/configs/cassandra/wait-for-it.sh:/wait-for-it.sh:ro
-
-  cassandra-backup:
-    hostname: cassandra-backup
-    image: docker.dev.fiz-karlsruhe.de/cassandra-backup:${OAI_CASSANDRA_BACKUP_VERSION}
-    environment:
-      JAVA_OPTS: "-Dlog4j2.formatMsgNoLookups=true"
-      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-    env_file:
-      - .cassandra_dump_env
-    networks:
-      - fizoai
-    volumes:
-      - ${OAI_DATA_FOLDER}/logs/cassandra-backup:/logs
-      - ${OAI_DATA_FOLDER}/data/cassandra:/source_data
-      - ${OAI_DATA_FOLDER}/data/cassandra-backup:/backup
-    depends_on:
-      - cassandra-oai
-
-
   elasticsearch-oai:
     hostname: elasticsearch-oai
-    image: docker.elastic.co/elasticsearch/elasticsearch:${OAI_ELASTICSEARCH_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${OAI_ELASTICSEARCH_VERSION_ENV}
     environment:
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Xms${OAI_ELASTICSEARCH_MEMORY} -Xmx${OAI_ELASTICSEARCH_MEMORY}"
+      - "ES_JAVA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Xms${OAI_ELASTICSEARCH_MEMORY_ENV} -Xmx${OAI_ELASTICSEARCH_MEMORY_ENV}"
       - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
       - discovery.type=single-node
     ulimits:
@@ -62,10 +17,10 @@ services:
     networks:
       - fizoai
     volumes:
-      - ${OAI_DATA_FOLDER}/logs/elasticsearch_oai:/usr/share/elasticsearch/logs
-      - ${OAI_DATA_FOLDER}/data/elasticsearch_oai/es-data:/usr/share/elasticsearch/es-data
-      - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/oai-elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-      - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/checkEsHealth.sh:/checkEsHealth.sh
+      - ${OAI_INSTALL_DIRECTORY_ENV}/logs/elasticsearch_oai:/usr/share/elasticsearch/logs
+      - ${OAI_INSTALL_DIRECTORY_ENV}/data/elasticsearch_oai/es-data:/usr/share/elasticsearch/es-data
+      - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/oai-elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/checkEsHealth.sh:/checkEsHealth.sh
 
   elasticsearch-oai-setup:
     hostname: elasticsearch-oai-setup
@@ -76,13 +31,13 @@ services:
     networks:
       - fizoai
     volumes:
-      - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/init-fizoai-elasticsearch.sh:ro
-      - ${OAI_DATA_FOLDER}/configs/elasticsearch_oai/item_mapping_es_v${OAI_ELASTICSEARCH_MAPPING_VERSION}:/item_mapping_es:ro
-      - ${OAI_DATA_FOLDER}/configs/cassandra/wait-for-it.sh:/wait-for-it.sh:ro
+      - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/init-fizoai-elasticsearch.sh:ro
+      - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/item_mapping_es_v${OAI_ELASTICSEARCH_MAPPING_VERSION_ENV}:/item_mapping_es:ro
+      - ${OAI_INSTALL_DIRECTORY_ENV}/configs/cassandra/wait-for-it.sh:/wait-for-it.sh:ro
 
   oai-backend:
     hostname: oai-backend
-    image: docker.dev.fiz-karlsruhe.de/oai-backend:${OAI_BACKEND_VERSION}
+    image: docker.dev.fiz-karlsruhe.de/oai-backend:${OAI_BACKEND_VERSION_ENV}
     environment:
       - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
       - "CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
@@ -92,14 +47,14 @@ services:
     networks:
       - fizoai
     volumes:
-      - ${OAI_DATA_FOLDER}/configs/oai_backend/fiz-oai-backend.properties:/usr/local/tomcat/conf/fiz-oai-backend.properties:ro
-      - ${OAI_DATA_FOLDER}/logs/oai_backend/:/usr/local/tomcat/logs
-      - ${OAI_DATA_FOLDER}/configs/oai_backend/checkBackendHealth.sh:/checkBackendHealth.sh
+      - ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/fiz-oai-backend.properties:/usr/local/tomcat/conf/fiz-oai-backend.properties:ro
+      - ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_backend/:/usr/local/tomcat/logs
+      - ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/checkBackendHealth.sh:/checkBackendHealth.sh
 
 
   oai-provider:
     hostname: oai-provider
-    image: docker.dev.fiz-karlsruhe.de/oai-provider:${OAI_FRONTEND_VERSION}
+    image: docker.dev.fiz-karlsruhe.de/oai-provider:${OAI_FRONTEND_VERSION_ENV}
     environment:
       - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
       - "CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
@@ -108,8 +63,8 @@ services:
     networks:
       - fizoai
     volumes:
-      - ${OAI_DATA_FOLDER}/configs/oai_provider/oaicat.properties:/usr/local/tomcat/conf/oaicat.properties:ro
-      - ${OAI_DATA_FOLDER}/logs/oai_provider/:/usr/local/tomcat/logs
+      - ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_provider/oaicat.properties:/usr/local/tomcat/conf/oaicat.properties:ro
+      - ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_provider/:/usr/local/tomcat/logs
 
 networks:
   fizoai:
