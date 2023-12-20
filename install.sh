@@ -102,6 +102,8 @@ chown -R ${ADMIN_USERNAME}:${ADMIN_GROUPNAME} ${INSTALL_DIR}/examples
 chmod +x ${INSTALL_DIR}/examples/*.sh
 
 ###############################################################################
-# Replace @@CASSANDRA_PASSWORD@@
+# Replace @@CASSANDRA_..@@ Values
 ###############################################################################
+sed -i "s|@@CASSANDRA_HOSTNAME@@|${CASSANDRA_HOSTNAME}|g" ${INSTALL_DIR}/configs/oai_backend/fiz-oai-backend.properties
+sed -i "s|@@CASSANDRA_USER@@|${CASSANDRA_USER}|g" ${INSTALL_DIR}/configs/oai_backend/fiz-oai-backend.properties
 sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${INSTALL_DIR}/configs/oai_backend/fiz-oai-backend.properties
