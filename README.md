@@ -6,14 +6,14 @@
 # Installation
 - Checkout this Git-Project onto docker-machine
 - Ensure if you have sudo all rights on the machine.
-- For installation execute the following command. It will prepare the folder structure and configuration for the application in the given OAI_INSTALL_DIRECTORY_ENV
-  - *host:/$> **sudo** ./install.sh OAI_INSTALL_DIRECTORY_ENV OAI_EXTERNAL_BACKEND_URL CASSANDRA_SUPERUSER_PASSWORD CASSANDRA_PASSWORD*
+- Set all Variables in configs/.env correctly
+- Execute the following command. It will prepare the folder structure and configuration for the application in the given OAI_INSTALL_DIRECTORY_ENV
+  - *host:/$> **sudo** ./install.sh*
 - If you want to start with docker swarm, you have to set the environment with:
   - *host:/$> set -a; . /etc/environment; set +a;*
 
 - OAI_INSTALL_DIRECTORY_ENV must be an absolute path!
-- OAI_EXTERNAL_BACKEND_URL the base URL of the backend without path <protocol://hostname:port>, e.g "http://localhost:8080"  or "http://mydomain:80"
-- CASSANDRA_SUPERUSER_PASSWORD Password for the default-superuser with name "cassandra"
+- OAI_EXTERNAL_BACKEND_URL the base URL of the backend with path <protocol://hostname:port>/oai-backend, e.g "http://localhost:8080/oai-backend"  or "http://mydomain:80/oai-backend"
 - CASSANDRA_PASSWORD Password for the User "fizoaibackend"
 
 # Network-Strategies
@@ -36,7 +36,7 @@
         networks:
           fizoai:
             external:
-              name: <existing_network_name>
+              name: <existing_network_name> (eg radar_radar)
         ```
 
 # Running the application  
@@ -86,12 +86,6 @@ The only Service allowed to be connected to the internet is the Oai-Provider. Yo
         ProxyPassReverse /oai http://localhost:8080/oai
     </VirtualHost>
 
-
-# Cassandra Backup
-A cronjob is creating regularly snapshots and backups of the cassandra database.
-You can find them here: OAI_OAI_INSTALL_DIRECTORY_ENV_ENV/data/cassandra-backup
-
-*You have to backup OAI_OAI_INSTALL_DIRECTORY_ENV_ENV/data/cassandra-backup for disaster recovery!*
 
 # Branding
 There are several parameters to configure the provider ui via

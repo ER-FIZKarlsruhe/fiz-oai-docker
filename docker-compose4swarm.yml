@@ -33,7 +33,7 @@ services:
     volumes:
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/init-fizoai-elasticsearch.sh:ro
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/item_mapping_es_v${OAI_ELASTICSEARCH_MAPPING_VERSION_ENV}:/item_mapping_es:ro
-      - ${OAI_INSTALL_DIRECTORY_ENV}/configs/cassandra/wait-for-it.sh:/wait-for-it.sh:ro
+      - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/wait-for-it.sh:/wait-for-it.sh:ro
 
   oai-backend:
     hostname: oai-backend
@@ -42,10 +42,10 @@ services:
       - "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
       - "CATALINA_OPTS=-Dlog4j2.formatMsgNoLookups=true -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
     depends_on:
-      - cassandra-oai-setup
       - elasticsearch-oai-setup
     networks:
       - fizoai
+      - cassandra
     volumes:
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/fiz-oai-backend.properties:/usr/local/tomcat/conf/fiz-oai-backend.properties:ro
       - ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_backend/:/usr/local/tomcat/logs
@@ -70,3 +70,6 @@ networks:
   fizoai:
     driver: overlay
     attachable: true
+  cassandra:
+    external:
+      name: cassandra_cassandra

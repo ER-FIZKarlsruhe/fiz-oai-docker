@@ -7,6 +7,8 @@ while read line || [ -n "$line" ]; do
   eval ${key}=\${value}
 done < "configs/.env"
 
+echo "fiz-oai-docker will be installed to ${OAI_INSTALL_DIRECTORY_ENV}!"
+
 ###########################################################################
 # Add groups and users
 ###########################################################################
@@ -39,11 +41,6 @@ cp ./configs/elasticsearch_oai/item_mapping_es_v* ${OAI_INSTALL_DIRECTORY_ENV}/c
 cp ./configs/elasticsearch_oai/init-fizoai-elasticsearch.sh ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
 cp ./configs/wait-for-it.sh ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
 cp ./configs/elasticsearch_oai/checkEsHealth.sh ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
-chmod +x ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/wait-for-it.sh
-
-chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/elasticsearch_oai/
-chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
-chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/elasticsearch_oai/
 
 ###############################################################################
 # Init oai_backend. The container runs under the user_id ${OAI_BACKEND_GROUPID}
@@ -55,10 +52,6 @@ mkdir -p ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_backend/
 cp ./configs/oai_backend/fiz-oai-backend.properties ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/
 cp ./configs/oai_backend/checkBackendHealth.sh ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/
 
-chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/oai_backend/
-chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/
-chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_backend/
-
 ###############################################################################
 # Init oai_provider. The container runs under the user_id ${OAI_PROVIDER_GROUPID}
 ###############################################################################
@@ -67,10 +60,6 @@ mkdir -p ${OAI_INSTALL_DIRECTORY_ENV}/data/oai_provider/
 mkdir -p ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_provider/
 
 cp ./configs/oai_provider/oaicat.properties ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_provider/
-
-chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/oai_provider/
-chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_provider/
-chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_provider/
 
 ###############################################################################
 # Init docker-compose
@@ -82,7 +71,7 @@ cp ./configs/.env ${OAI_INSTALL_DIRECTORY_ENV}
 #Set Environment
 touch -a /etc/environment
 while read line || [ -n "$line" ]; do
-  if [[ ! $line =~ [^[:space:]] ]] || [[ $line = \#* ]] || [[ $line != *_ENV ]]; then
+  if [[ ! $line =~ [^[:space:]] ]] || [[ $line = \#* ]] || [[ $line != *_ENV* ]]; then
     continue
   fi
   keyValue=(${line//=/ })
@@ -93,17 +82,34 @@ done < "${OAI_INSTALL_DIRECTORY_ENV}/.env"
 ###############################################################################
 # Copy examples
 ###############################################################################
-mkdir -p ${INSTALL_DIR}/examples/
-cp examples/* ${INSTALL_DIR}/examples
-sed -i "s|@@OAI_EXTERNAL_BACKEND_URL@@|${OAI_EXTERNAL_BACKEND_URL}|g" ${INSTALL_DIR}/examples/createFormats.sh
-sed -i "s|@@OAI_EXTERNAL_BACKEND_URL@@|${OAI_EXTERNAL_BACKEND_URL}|g" ${INSTALL_DIR}/examples/createCrosswalks.sh
-sed -i "s|@@OAI_EXTERNAL_BACKEND_URL@@|${OAI_EXTERNAL_BACKEND_URL}|g" ${INSTALL_DIR}/examples/addItem.sh
-chown -R ${ADMIN_USERNAME}:${ADMIN_GROUPNAME} ${INSTALL_DIR}/examples
-chmod +x ${INSTALL_DIR}/examples/*.sh
+mkdir -p ${OAI_INSTALL_DIRECTORY_ENV}/examples/
+cp examples/* ${OAI_INSTALL_DIRECTORY_ENV}/examples
+sed -i "s|@@OAI_EXTERNAL_BACKEND_URL@@|${OAI_EXTERNAL_BACKEND_URL}|g" ${OAI_INSTALL_DIRECTORY_ENV}/examples/createFormats.sh
+sed -i "s|@@OAI_EXTERNAL_BACKEND_URL@@|${OAI_EXTERNAL_BACKEND_URL}|g" ${OAI_INSTALL_DIRECTORY_ENV}/examples/createCrosswalks.sh
+sed -i "s|@@OAI_EXTERNAL_BACKEND_URL@@|${OAI_EXTERNAL_BACKEND_URL}|g" ${OAI_INSTALL_DIRECTORY_ENV}/examples/addItem.sh
 
 ###############################################################################
 # Replace @@CASSANDRA_..@@ Values
 ###############################################################################
-sed -i "s|@@CASSANDRA_HOSTNAME@@|${CASSANDRA_HOSTNAME}|g" ${INSTALL_DIR}/configs/oai_backend/fiz-oai-backend.properties
-sed -i "s|@@CASSANDRA_USER@@|${CASSANDRA_USER}|g" ${INSTALL_DIR}/configs/oai_backend/fiz-oai-backend.properties
-sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${INSTALL_DIR}/configs/oai_backend/fiz-oai-backend.properties
+sed -i "s|@@CASSANDRA_HOSTNAME@@|${CASSANDRA_HOSTNAME}|g" ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/fiz-oai-backend.properties
+sed -i "s|@@CASSANDRA_USER@@|${CASSANDRA_USER}|g" ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/fiz-oai-backend.properties
+sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/fiz-oai-backend.properties
+
+###############################################################################
+# Set Mod + Owners
+###############################################################################
+chmod +x ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/wait-for-it.sh
+chmod +x ${OAI_INSTALL_DIRECTORY_ENV}/examples/*.sh
+
+chown -R ${ADMIN_USERNAME}:${ADMIN_GROPNAME} ${OAI_INSTALL_DIRECTORY_ENV}
+chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/elasticsearch_oai/
+chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
+chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/elasticsearch_oai/
+
+chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/oai_backend/
+chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/
+chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_backend/
+
+chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/oai_provider/
+chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_provider/
+chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_provider/
