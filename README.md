@@ -2,6 +2,7 @@
 - Linux OS system
 - The easiest and recommended way is to make sure you have the latest version of Docker Desktop, which bundles the Docker Engine and Docker CLI platform including Compose V2
 - jq package (just needed for crosswalk examples)
+- Running Cassandra, either in dokcer-network for swarm or on a host with port 9042
 
 # Installation
 - Checkout this Git-Project onto docker-machine
@@ -39,7 +40,8 @@
               name: <existing_network_name> (eg radar_radar)
         ```
 
-# Running the application  
+# Running the application
+  *Depends on a running Cassandra, either in dokcer-network for swarm or on a host with port 9042*
   *host:/$> cd OAI_INSTALL_DIRECTORY_ENV*  
   *host:/$> sudo docker compose up*
 OR
