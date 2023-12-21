@@ -2,7 +2,7 @@
 - Linux OS system
 - The easiest and recommended way is to make sure you have the latest version of Docker Desktop, which bundles the Docker Engine and Docker CLI platform including Compose V2
 - jq package (just needed for crosswalk examples)
-- Running Cassandra, either in dokcer-network for swarm or on a host with port 9042
+- Running Cassandra, either in docker-network for swarm or on a host with port 9042
 
 # Installation
 - Checkout this Git-Project onto docker-machine
