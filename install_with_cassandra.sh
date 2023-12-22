@@ -122,6 +122,7 @@ sed -i "s|@@CASSANDRA_SUPERUSER_PASSWORD@@|${CASSANDRA_SUPERUSER_PASSWORD}|g" ${
 sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${OAI_INSTALL_DIRECTORY_ENV}/configs/cassandra/init-fizoai-database.sh
 sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${OAI_INSTALL_DIRECTORY_ENV}/configs/cassandra/jmxremote.password
 sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${OAI_INSTALL_DIRECTORY_ENV}/.cassandra_dump_env
+sed -i "s|@@CASSANDRA_ADMIN_EMAIL@@|${CASSANDRA_ADMIN_EMAIL}|g" ${OAI_INSTALL_DIRECTORY_ENV}/.cassandra_dump_env
 sed -i "s|@@CASSANDRA_HOSTNAME@@|${CASSANDRA_HOSTNAME}|g" ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/fiz-oai-backend.properties
 sed -i "s|@@CASSANDRA_USER@@|${CASSANDRA_USER}|g" ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/fiz-oai-backend.properties
 sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/fiz-oai-backend.properties
@@ -132,6 +133,7 @@ sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${OAI_INSTALL_DIRECTOR
 chmod +x ${OAI_INSTALL_DIRECTORY_ENV}/configs/cassandra/wait-for-it.sh
 chmod +x ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/wait-for-it.sh
 chmod +x ${OAI_INSTALL_DIRECTORY_ENV}/examples/*.sh
+chmod +x ${OAI_INSTALL_DIRECTORY_ENV}/data/cassandra-backup
 
 chown -R ${ADMIN_USERNAME}:${ADMIN_GROUPNAME} ${OAI_INSTALL_DIRECTORY_ENV}
 chown -R ${CASSANDRA_GROUPID}:${CASSANDRA_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/cassandra
