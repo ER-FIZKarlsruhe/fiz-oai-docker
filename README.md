@@ -4,6 +4,13 @@
 - jq package (just needed for crosswalk examples)
 - You can start this application with or without cassandra.
 - If you start the application without cassandra, you need a running Cassandra, either in docker-network for swarm or on a host with port 9042
+- You can start this Project with Docker-Swarm (Multi-Node) or Docker-Compose (one Node)
+  - If you want to start with Docker-Swarm, first initialize Swarm
+    - On Manager-Node execute *docker swarm leave --force*
+    - On Worker-Nodes execute *docker swarm leave --force*
+    - On Manager-Node execute *docker swarm init --advertise-addr <ip_of_manager_node>
+    - On Manager-Node execute *docker swarm join-token worker -q* to get the Join-Token
+    - On Worker-Nodes execute *docker swarm join --token <join_token> <ip_of_manager_node>:2377
 
 # Installation
 - Checkout this Git-Project onto docker-machine
