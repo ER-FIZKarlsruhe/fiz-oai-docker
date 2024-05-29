@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #Read .env and fill it in Variables
 while read line || [ -n "$line" ]; do
   if [[ ! $line =~ [^[:space:]] ]] || [[ $line = \#* ]]; then
