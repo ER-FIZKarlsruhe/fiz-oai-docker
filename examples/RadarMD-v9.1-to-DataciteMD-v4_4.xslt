@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Copyright 2021 FIZ Karlsruhe - Leibniz-Institut fuer Informationsinfrastruktur GmbH
+Copyright 2022 FIZ Karlsruhe - Leibniz-Institut fuer Informationsinfrastruktur GmbH
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ limitations under the License.
                 xmlns:dct="http://purl.org/dc/terms/" xmlns:dck="http://datacite.org/schema/kernel-4" xmlns:xd="http://www.oxygenxml.com/ns/doc/xsl"
                 exclude-result-prefixes="#default rtype rad re dct dck xd" version="1.0">
 
-  <xsl:output method="xml" indent="yes" />
+  <xsl:output method="xml" encoding="UTF-8" indent="yes" />
 
   <xsl:param name="datasetSize" />
   <xsl:param name="currentYear" />
 
   <xsl:template match="rad:radarDataset">
     <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4"
-              xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">
+              xsi:schemaLocation="http://datacite.org/schema/kernel-4 https://schema.datacite.org/meta/kernel-4.4/metadata.xsd">
       <xsl:apply-templates  select="re:identifier" />
       <xsl:apply-templates select="re:creators" />
       <xsl:call-template name="titles" />
@@ -58,17 +58,71 @@ limitations under the License.
     </xsl:if>
   </xsl:template>
 
-  <xsl:template name="nameIdentifier">
+  <xsl:template name="nameIdentifierFromElement">
     <xsl:for-each select="re:nameIdentifier">
-      <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">
+      <nameIdentifier>
+        <xsl:if test="string-length(@nameIdentifierScheme) &gt; 0 ">
+          <xsl:attribute name="nameIdentifierScheme"><xsl:value-of select="@nameIdentifierScheme" /></xsl:attribute>
+        </xsl:if>
+        <xsl:if test="string-length(@schemeURI) &gt; 0 ">
+          <xsl:attribute name="schemeURI"><xsl:value-of select="@schemeURI" /></xsl:attribute>
+        </xsl:if>
         <xsl:value-of select="." />
       </nameIdentifier>
     </xsl:for-each>
   </xsl:template>
 
+  <xsl:template name="nameIdentifierFromAttribute">
+    <xsl:if test="string-length(@nameIdentifier) &gt; 0 ">
+      <nameIdentifier>
+        <xsl:if test="string-length(@nameIdentifierScheme) &gt; 0 ">
+          <xsl:attribute name="nameIdentifierScheme"><xsl:value-of select="@nameIdentifierScheme" /></xsl:attribute>
+        </xsl:if>
+        <xsl:if test="string-length(@schemeURI) &gt; 0 ">
+          <xsl:attribute name="schemeURI"><xsl:value-of select="@schemeURI" /></xsl:attribute>
+        </xsl:if>
+        <xsl:value-of select="@nameIdentifier" />
+      </nameIdentifier>
+    </xsl:if>
+  </xsl:template>
+
+
+  <xsl:template name="creatorAffiliation">
+    <affiliation>
+      <xsl:if test="string-length(re:creatorAffiliation/@affiliationIdentifier) &gt; 0 ">
+        <xsl:attribute name="affiliationIdentifier"><xsl:value-of select="re:creatorAffiliation/@affiliationIdentifier" /></xsl:attribute>
+
+        <xsl:if test="string-length(re:creatorAffiliation/@affiliationIdentifierScheme) &gt; 0 ">
+          <xsl:attribute name="affiliationIdentifierScheme"><xsl:value-of select="re:creatorAffiliation/@affiliationIdentifierScheme" /></xsl:attribute>
+        </xsl:if>
+        <xsl:if test="string-length(re:creatorAffiliation/@schemeURI) &gt; 0 ">
+          <xsl:attribute name="schemeURI"><xsl:value-of select="re:creatorAffiliation/@schemeURI" /></xsl:attribute>
+        </xsl:if>
+      </xsl:if>
+      <xsl:value-of select="re:creatorAffiliation" />
+    </affiliation>
+  </xsl:template>
+
+  <xsl:template name="contributorAffiliation">
+    <affiliation>
+      <xsl:if test="string-length(re:contributorAffiliation/@affiliationIdentifier) &gt; 0 ">
+        <xsl:attribute name="affiliationIdentifier"><xsl:value-of select="re:contributorAffiliation/@affiliationIdentifier" /></xsl:attribute>
+
+        <xsl:if test="string-length(re:contributorAffiliation/@affiliationIdentifierScheme) &gt; 0 ">
+          <xsl:attribute name="affiliationIdentifierScheme"><xsl:value-of select="re:contributorAffiliation/@affiliationIdentifierScheme" /></xsl:attribute>
+        </xsl:if>
+        <xsl:if test="string-length(re:contributorAffiliation/@schemeURI) &gt; 0 ">
+          <xsl:attribute name="schemeURI"><xsl:value-of select="re:contributorAffiliation/@schemeURI" /></xsl:attribute>
+        </xsl:if>
+      </xsl:if>
+      <xsl:value-of select="re:contributorAffiliation" />
+    </affiliation>
+  </xsl:template>
+
   <xsl:template match="re:creators">
     <creators>
       <xsl:for-each select="re:creator">
+
         <creator>
           <creatorName>
             <xsl:value-of select="re:creatorName" />
@@ -83,10 +137,9 @@ limitations under the License.
               <xsl:value-of select="." />
             </familyName>
           </xsl:for-each>
-          <xsl:call-template name="nameIdentifier" />
-          <affiliation>
-            <xsl:value-of select="re:creatorAffiliation" />
-          </affiliation>
+          <xsl:call-template name="nameIdentifierFromElement" />
+          <xsl:call-template name="creatorAffiliation" />
+
         </creator>
       </xsl:for-each>
     </creators>
@@ -170,6 +223,19 @@ limitations under the License.
   <xsl:template match="re:keywords">
     <xsl:for-each select="re:keyword">
       <subject>
+        <xsl:if test="string-length(@valueURI) &gt; 0 ">
+          <xsl:attribute name="valueURI"><xsl:value-of select="@valueURI" /></xsl:attribute>
+
+          <xsl:if test="string-length(@keywordScheme) &gt; 0 ">
+            <xsl:attribute name="subjectScheme"><xsl:value-of select="@keywordScheme" /></xsl:attribute>
+          </xsl:if>
+          <xsl:if test="string-length(@schemeURI) &gt; 0 ">
+            <xsl:attribute name="schemeURI"><xsl:value-of select="@schemeURI" /></xsl:attribute>
+          </xsl:if>
+          <xsl:if test="string-length(@classificationCode) &gt; 0 ">
+            <xsl:attribute name="classificationCode"><xsl:value-of select="@classificationCode" /></xsl:attribute>
+          </xsl:if>
+        </xsl:if>
         <xsl:value-of select="." />
       </subject>
     </xsl:for-each>
@@ -187,9 +253,74 @@ limitations under the License.
   <xsl:template match="re:rights">
     <xsl:for-each select="/rad:radarDataset/re:rights/re:controlledRights">
       <rightsList>
-        <rights>
-          <xsl:value-of select="." />
-        </rights>
+                <rights rightsURI="info:eu-repo/semantics/openAccess">Open Access</rights>
+
+			<xsl:choose>
+			  <xsl:when test=".='CC BY 4.0 Attribution'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="CC-BY-4.0" rightsURI='https://creativecommons.org/licenses/by/4.0/legalcode'>Creative Commons Attribution 4.0 International</rights>
+			  </xsl:when>
+			  <xsl:when test=".='CC BY-ND 4.0 Attribution-NoDerivs'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="CC-BY-ND-4.0" rightsURI='https://creativecommons.org/licenses/by-nd/4.0/legalcode'>Creative Commons Attribution No Derivatives 4.0 International</rights>
+			  </xsl:when>
+			  <xsl:when test=".='CC BY-SA 4.0 Attribution-ShareAlike'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="CC-BY-SA-4.0" rightsURI='https://creativecommons.org/licenses/by-sa/4.0/legalcode'>Creative Commons Attribution Share Alike 4.0 International</rights>
+			  </xsl:when>
+			  <xsl:when test=".='CC BY-NC 4.0 Attribution-NonCommercial'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="CC-BY-NC-4.0" rightsURI='https://creativecommons.org/licenses/by-nc/4.0/legalcode'>Creative Commons Attribution Non Commercial 4.0 International</rights>
+			  </xsl:when>
+			  <xsl:when test=".='CC BY-NC-SA 4.0 Attribution-NonCommercial-ShareAlike'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="CC-BY-NC-SA-4.0" rightsURI='https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode'>Creative Commons Attribution Non Commercial Share Alike 4.0 International</rights>
+			  </xsl:when>
+			  <xsl:when test=".='CC BY-NC-ND 4.0 Attribution-NonCommercial-NoDerivs'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="CC-BY-NC-ND-4.0" rightsURI='https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode'>Creative Commons Attribution Non Commercial No Derivatives 4.0 International</rights>
+			  </xsl:when>
+			  <xsl:when test=".='CC0 1.0 Universal Public Domain Dedication'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="CC0-1.0" rightsURI='https://creativecommons.org/publicdomain/zero/1.0/legalcode'>Creative Commons Zero v1.0 Universal</rights>
+			  </xsl:when>
+			  <xsl:when test=".='Attribution License (ODC-By)'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="ODC-By-1.0" rightsURI='https://opendatacommons.org/licenses/by/1.0/'>Open Data Commons Attribution License v1.0</rights>
+			  </xsl:when>
+			  <!-- Is not listed in fabrica -->
+			  <xsl:when test=".='Open Database License (ODC-ODbL)'">
+                <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="ODbL-1.0" rightsURI='http://www.opendatacommons.org/licenses/odbl/1.0/'>Open Data Commons Open Database License v1.0</rights>
+			  </xsl:when>
+				<!-- Is not listed in fabrica -->
+			  <xsl:when test=".='Public Domain Dedication and License (PDDL)'">
+                <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="PDDL-1.0" rightsURI='http://opendatacommons.org/licenses/pddl/1.0/'>Open Data Commons Public Domain Dedication &amp; License 1.0</rights>
+			  </xsl:when>
+
+			  <xsl:when test=".='Apache License 2.0'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="Apache-2.0" rightsURI='http://www.apache.org/licenses/LICENSE-2.0'>Apache License 2.0</rights>
+			  </xsl:when>
+			  <xsl:when test=".='Common Development and Distribution License 1.0'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="CDDL-1.0" rightsURI='https://opensource.org/licenses/cddl1'>Common Development and Distribution License 1.0</rights>
+			  </xsl:when>
+
+			  <xsl:when test=".='Eclipse Public License 1.0'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="EPL-1.0" rightsURI='http://www.eclipse.org/legal/epl-v10.html'>Eclipse Public License 1.0</rights>
+			  </xsl:when>
+			  <xsl:when test=".='Eclipse Public License 2.0'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="EPL-2.0" rightsURI='https://www.eclipse.org/legal/epl-2.0'>Eclipse Public License 2.0</rights>
+			  </xsl:when>
+			  <xsl:when test=".='GNU General Public License v3.0 only'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="GPL-3.0-only" rightsURI='https://www.gnu.org/licenses/gpl-3.0-standalone.html'>GNU General Public License v3.0 only</rights>
+			  </xsl:when>
+			  <xsl:when test=".='GNU Lesser General Public License v3.0 only'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="LGPL-3.0-only" rightsURI='https://www.gnu.org/licenses/lgpl-3.0-standalone.html'>GNU Lesser General Public License v3.0 only</rights>
+			  </xsl:when>
+			  <xsl:when test=".='BSD 2-Clause Simplified License'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="BSD-2-Clause" rightsURI='https://opensource.org/licenses/BSD-2-Clause'>BSD 2-Clause "Simplified" License</rights>
+			  </xsl:when>
+			  <xsl:when test=".='BSD 3-Clause New or Revised License'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="BSD-3-Clause" rightsURI='https://opensource.org/licenses/BSD-3-Clause'>BSD 3-Clause "New" or "Revised" License</rights>
+			  </xsl:when>
+			  <xsl:when test=".='MIT License'">
+			    <rights schemeURI="https://spdx.org/licenses/" rightsIdentifierScheme="SPDX" rightsIdentifier="MIT" rightsURI='https://opensource.org/licenses/MIT'>MIT License</rights>
+			  </xsl:when>
+			  <xsl:otherwise>
+				<rights><xsl:value-of select="."/></rights>
+			  </xsl:otherwise>
+			</xsl:choose>
       </rightsList>
     </xsl:for-each>
   </xsl:template>
@@ -208,10 +339,8 @@ limitations under the License.
         <contributorName>
           <xsl:value-of select="./re:contributorName" />
         </contributorName>
-        <xsl:call-template name="nameIdentifier" />
-        <affiliation>
-          <xsl:value-of select="re:contributorAffiliation" />
-        </affiliation>
+        <xsl:call-template name="nameIdentifierFromElement" />
+        <xsl:call-template name="contributorAffiliation" />
       </contributor>
     </xsl:for-each>
   </xsl:template>
@@ -223,6 +352,7 @@ limitations under the License.
         <contributorName>
           <xsl:value-of select="." />
         </contributorName>
+        <xsl:call-template name="nameIdentifierFromAttribute" />
       </contributor>
     </xsl:for-each>
   </xsl:template>
@@ -267,19 +397,22 @@ limitations under the License.
             <xsl:attribute name="descriptionType">TechnicalInfo</xsl:attribute>
           </xsl:when>
           <xsl:when test="@dataSourceDetail = 'Observation'">
-            <xsl:attribute name="descriptionType">Other</xsl:attribute>
+            <xsl:attribute name="descriptionType">Methods</xsl:attribute>
           </xsl:when>
           <xsl:when test="@dataSourceDetail = 'Organism'">
-            <xsl:attribute name="descriptionType">Other</xsl:attribute>
+            <xsl:attribute name="descriptionType">TechnicalInfo</xsl:attribute>
           </xsl:when>
           <xsl:when test="@dataSourceDetail = 'Tissue'">
-            <xsl:attribute name="descriptionType">Other</xsl:attribute>
+            <xsl:attribute name="descriptionType">TechnicalInfo</xsl:attribute>
+          </xsl:when>
+          <xsl:when test="@dataSourceDetail = 'Survey'">
+            <xsl:attribute name="descriptionType">Methods</xsl:attribute>
           </xsl:when>
           <xsl:when test="@dataSourceDetail = 'Trial'">
-            <xsl:attribute name="descriptionType">Other</xsl:attribute>
+            <xsl:attribute name="descriptionType">Methods</xsl:attribute>
           </xsl:when>
           <xsl:when test="@dataSourceDetail = 'Media'">
-            <xsl:attribute name="descriptionType">Other</xsl:attribute>
+            <xsl:attribute name="descriptionType">TechnicalInfo</xsl:attribute>
           </xsl:when>
           <xsl:otherwise>
             <xsl:attribute name="descriptionType"><xsl:value-of select="@dataSourceDetail" /></xsl:attribute>
@@ -326,9 +459,16 @@ limitations under the License.
     <relatedIdentifiers>
       <xsl:for-each select="re:relatedIdentifier">
         <relatedIdentifier>
-          <xsl:attribute name="relatedIdentifierType">
-            <xsl:value-of select="@relatedIdentifierType" />
-          </xsl:attribute>
+          <xsl:choose>
+            <xsl:when  test="@relatedIdentifierType = 'ePIC'">
+              <xsl:attribute name="relatedIdentifierType">Handle</xsl:attribute>
+            </xsl:when >
+            <xsl:otherwise>
+              <xsl:attribute name="relatedIdentifierType">
+                <xsl:value-of select="@relatedIdentifierType" />
+              </xsl:attribute>
+            </xsl:otherwise>
+          </xsl:choose>
           <xsl:attribute name="relationType">
             <xsl:value-of select="@relationType" />
           </xsl:attribute>
@@ -398,10 +538,24 @@ limitations under the License.
                 <xsl:when test="re:funderIdentifier/@type = 'CrossRefFunder'">
                   <xsl:attribute name="funderIdentifierType">Crossref Funder ID</xsl:attribute>
                 </xsl:when>
+                <xsl:when test="re:funderIdentifier/@type = 'GRID'">
+                  <xsl:attribute name="funderIdentifierType">GRID</xsl:attribute>
+                </xsl:when>
+                <xsl:when test="re:funderIdentifier/@type = 'ISNI'">
+                  <xsl:attribute name="funderIdentifierType">ISNI</xsl:attribute>
+                </xsl:when>
+                <xsl:when test="re:funderIdentifier/@type = 'ROR'">
+                  <xsl:attribute name="funderIdentifierType">ROR</xsl:attribute>
+                </xsl:when>
                 <xsl:otherwise>
-                  <xsl:attribute name="funderIdentifierType"><xsl:value-of select="re:funderIdentifier/@type" /></xsl:attribute>
+                  <xsl:attribute name="funderIdentifierType">Other</xsl:attribute>
                 </xsl:otherwise>
               </xsl:choose>
+
+              <xsl:if test="string-length(re:funderIdentifier/@schemeURI) &gt; 0 ">
+                <xsl:attribute name="schemeURI"><xsl:value-of select="re:funderIdentifier/@schemeURI" /></xsl:attribute>
+              </xsl:if>
+
               <xsl:value-of select="re:funderIdentifier" />
             </funderIdentifier>
           </xsl:if>
@@ -988,7 +1142,7 @@ limitations under the License.
 
   <xsl:template name="formats">
     <formats>
-      <format>application/zip</format>
+      <format>application/x-tar</format>
     </formats>
   </xsl:template>
 
