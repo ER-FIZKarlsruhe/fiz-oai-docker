@@ -21,7 +21,7 @@ if [[ "$status_code" -ne 404 ]] ; then
 fi
 curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data "@item_mapping_es" -i 'http://elasticsearch-oai:9200/items1'
 
-curl -v -L --noproxy '*' -X POST -H 'Content-Type: application/json' --data "@alias.json" -i 'http://elasticsearch-oai:9200/_aliases'
+curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' -i 'http://elasticsearch-oai:9200/items1/_alias/items'
 
 exit 0
 
