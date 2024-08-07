@@ -69,6 +69,7 @@ services:
     volumes:
       - ${OAI_INSTALL_DIRECTORY_ENV}/logs/elasticsearch_oai:/usr/share/elasticsearch/logs
       - ${OAI_INSTALL_DIRECTORY_ENV}/data/elasticsearch_oai/es-data:/usr/share/elasticsearch/es-data
+      - ${OAI_INSTALL_DIRECTORY_ENV}/data/elasticsearch_oai/backup:/usr/share/elasticsearch/backup
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/oai-elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/checkEsHealth.sh:/checkEsHealth.sh
     ports:

@@ -36,6 +36,11 @@ path.data: /usr/share/elasticsearch/es-data
 #
 path.logs: /usr/share/elasticsearch/logs
 #
+# Path to backups:
+#
+path.repo: /usr/share/elasticsearch/backup
+
+#
 # ----------------------------------- Memory -----------------------------------
 #
 # Lock the memory on startup:

@@ -31,8 +31,9 @@ if [[ "$status_code" -ne 404 ]] ; then
   exit 0
 fi
 curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data "@item_mapping_es" -i 'http://elasticsearch-oai:9200/items1'
-
 curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' -i 'http://elasticsearch-oai:9200/items1/_alias/items'
+curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data '{"type":"fs","settings":{"location":"/usr/share/elasticsearch/backup","compress":true}}' -i 'http://elasticsearch-oai:9200/_snapshot/oai-backup'
+curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data '{"schedule": "0 30 1 * * ?","name": "oai-snapshots","repository": "oai-backup","config": {"indices": "*","include_global_state": true},"retention": {"expire_after": "30d","min_count": 1,"max_count": 5}}' -i 'http://elasticsearch-oai:9200/_slm/policy/nightly-snapshots'
 
 exit 0
 
