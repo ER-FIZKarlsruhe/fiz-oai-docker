@@ -38,6 +38,12 @@ services:
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/init-fizoai-elasticsearch.sh:/init-fizoai-elasticsearch.sh:ro
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/item_mapping_es_v${OAI_ELASTICSEARCH_MAPPING_VERSION_ENV}:/item_mapping_es:ro
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/wait-for-it.sh:/wait-for-it.sh:ro
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 3s
+        max_attempts: 2
+        window: 240s
 
   oai-backend:
     hostname: oai-backend

@@ -1,15 +1,26 @@
 #!/bin/sh
 
-URL="http://elasticsearch-oai:9200/_cluster/health?wait_for_status=green&timeout=1s"
+URL_GREEN="http://elasticsearch-oai:9200/_cluster/health?wait_for_status=green&timeout=1s"
+URL_YELLOW="http://elasticsearch-oai:9200/_cluster/health?wait_for_status=yellow&timeout=1s"
+
 MAX_WAIT=240
 i=0
 
 #Wait for Elasticsearch Health-Status green (returns status-code 200) for MAX_WAIT Seconds
 while [ $i -le $MAX_WAIT ]; do
-  response=$(curl -L --noproxy '*' --write-out %{http_code} --silent --output /dev/null $URL)
+  echo "Check ES-Status"
+  response=$(curl -L --noproxy '*' --write-out %{http_code} --silent --output /dev/null $URL_GREEN)
   if [[ "$response" -eq 200 ]]; then
+    echo "Elasticsearch Status is GREEN"
     break;
   fi
+  response=$(curl -L --noproxy '*' --write-out %{http_code} --silent --output /dev/null $URL_YELLOW)
+  if [[ "$response" -eq 200 ]]; then
+    echo "Elasticsearch Status is YELLOW"
+    break;
+  fi
+  echo "Elasticsearch Status is not GREEN or YELLOW"
+  sleep 1
   i=$((i + 1))
 done
 
