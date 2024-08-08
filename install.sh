@@ -9,26 +9,26 @@ while read line || [ -n "$line" ]; do
   eval ${key}=\${value}
 done < "configs/.env"
 
-echo "fiz-oai-docker will be installed to ${OAI_INSTALL_DIRECTORY_ENV}!"
+echo "fiz-oai-docker will be installed to ${OAI_INSTALL_DIRECTORY_ENV}"
 
 ###########################################################################
 # Add groups and users
 ###########################################################################
-groupadd --gid ${OAI_BACKEND_GROUPID} oai_backend > /dev/null 2>&1
-groupadd --gid ${OAI_PROVIDER_GROUPID} oai_provider > /dev/null 2>&1
-groupadd --gid ${ELASTICSEARCH_GROUPID} oai_elasticsearch > /dev/null 2>&1
+sudo groupadd --gid ${OAI_BACKEND_GROUPID} oai_backend > /dev/null 2>&1
+sudo groupadd --gid ${OAI_PROVIDER_GROUPID} oai_provider > /dev/null 2>&1
+sudo groupadd --gid ${ELASTICSEARCH_GROUPID} oai_elasticsearch > /dev/null 2>&1
 
-useradd --uid ${OAI_BACKEND_GROUPID} oai_backend > /dev/null 2>&1
-useradd --uid ${OAI_PROVIDER_GROUPID} oai_provider > /dev/null 2>&1
-useradd --uid ${ELASTICSEARCH_GROUPID} oai_elasticsearch > /dev/null 2>&1
+sudo useradd -u ${OAI_BACKEND_GROUPID} -g ${OAI_BACKEND_GROUPID} oai_backend > /dev/null 2>&1
+sudo useradd -u ${OAI_PROVIDER_GROUPID} -g ${OAI_PROVIDER_GROUPID} oai_provider > /dev/null 2>&1
+sudo useradd -u ${ELASTICSEARCH_GROUPID} -g ${ELASTICSEARCH_GROUPID} oai_elasticsearch > /dev/null 2>&1
 
-usermod -a -G ${OAI_BACKEND_GROUPID} oai_backend > /dev/null 2>&1
-usermod -a -G ${OAI_PROVIDER_GROUPID} oai_provider > /dev/null 2>&1
-usermod -a -G ${ELASTICSEARCH_GROUPID} oai_elasticsearch > /dev/null 2>&1
+sudo usermod -a -G ${OAI_BACKEND_GROUPID} oai_backend > /dev/null 2>&1
+sudo usermod -a -G ${OAI_PROVIDER_GROUPID} oai_provider > /dev/null 2>&1
+sudo usermod -a -G ${ELASTICSEARCH_GROUPID} oai_elasticsearch > /dev/null 2>&1
 
-usermod -a -G ${OAI_BACKEND_GROUPID} ${ADMIN_USERNAME} > /dev/null 2>&1
-usermod -a -G ${OAI_PROVIDER_GROUPID} ${ADMIN_USERNAME} > /dev/null 2>&1
-usermod -a -G ${ELASTICSEARCH_GROUPID} ${ADMIN_USERNAME} > /dev/null 2>&1
+sudo usermod -a -G ${OAI_BACKEND_GROUPID} ${ADMIN_USERNAME} > /dev/null 2>&1
+sudo usermod -a -G ${OAI_PROVIDER_GROUPID} ${ADMIN_USERNAME} > /dev/null 2>&1
+sudo usermod -a -G ${ELASTICSEARCH_GROUPID} ${ADMIN_USERNAME} > /dev/null 2>&1
 
 ###############################################################################
 # Init Elasticsearch. The container runs under the user_id ELASTICSEARCH_GROUPID
@@ -101,18 +101,20 @@ sed -i "s|@@CASSANDRA_PASSWORD@@|${CASSANDRA_PASSWORD}|g" ${OAI_INSTALL_DIRECTOR
 ###############################################################################
 # Set Mod + Owners
 ###############################################################################
-chmod +x ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/wait-for-it.sh
-chmod +x ${OAI_INSTALL_DIRECTORY_ENV}/examples/*.sh
+sudo chmod +x ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/wait-for-it.sh
+sudo chmod +x ${OAI_INSTALL_DIRECTORY_ENV}/examples/*.sh
 
-chown -R ${ADMIN_USERNAME}:${ADMIN_GROUPNAME} ${OAI_INSTALL_DIRECTORY_ENV}
-chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/elasticsearch_oai/
-chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
-chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/elasticsearch_oai/
+sudo chown -R ${ADMIN_USERNAME}:${ADMIN_GROUPNAME} ${OAI_INSTALL_DIRECTORY_ENV}
+sudo chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/elasticsearch_oai/
+sudo chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
+sudo chown -R ${ELASTICSEARCH_GROUPID}:${ELASTICSEARCH_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/elasticsearch_oai/
 
-chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/oai_backend/
-chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/
-chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_backend/
+sudo chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/oai_backend/
+sudo chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/
+sudo chown -R ${OAI_BACKEND_GROUPID}:${OAI_BACKEND_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_backend/
 
-chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/oai_provider/
-chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_provider/
-chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_provider/
+sudo chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/data/oai_provider/
+sudo chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_provider/
+sudo chown -R ${OAI_PROVIDER_GROUPID}:${OAI_PROVIDER_GROUPID} ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_provider/
+
+sudo chmod -R 775 ${OAI_INSTALL_DIRECTORY_ENV}/configs
