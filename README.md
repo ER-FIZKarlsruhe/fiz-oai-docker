@@ -54,15 +54,16 @@
 
 # Running the application
   - Application can get started with or without Cassandra
+  - Startscripts set Environment from .env-File, so if versions etc change, you just need to adapt this file. 
   - With Cassandra:
     - *host:/$> cd OAI_INSTALL_DIRECTORY_ENV*
-    - *host:/$> sudo docker compose -f docker-compose-with-cassandra.yml up*
+    - *host:/$> ./composeWithCassandra.sh start*
   - Without Cassandra
     - *Depends on a running Cassandra, either in docker-network for swarm or on a host with port 9042*
     - *host:/$> cd OAI_INSTALL_DIRECTORY_ENV*  
-    - *host:/$> sudo docker compose up*
+    - *host:/$> ./compose.sh start*
     - OR
-    - *host:/$> docker stack deploy -c /data/docker/dev0102/oai/docker-compose4swarm.yml oai
+    - *host:/$> ./swarm.sh start*
 
 NOTE: When using docker-swarm, no ports are opened. So you need an Webserver in an Docker-Container in the Network. 
 Then proxyPass to the hostnames noted in docker-compose4swarm.yml
