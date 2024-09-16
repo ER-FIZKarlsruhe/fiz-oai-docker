@@ -27,6 +27,7 @@ services:
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/checkEsHealth.sh:/checkEsHealth.sh
     ports:
       - '9200:9200'
+    restart: always
 
   elasticsearch-oai-setup:
     hostname: elasticsearch-oai-setup
@@ -45,6 +46,7 @@ services:
         delay: 3s
         max_attempts: 2
         window: 240s
+    restart: on-failure
 
   oai-backend:
     hostname: oai-backend
@@ -66,6 +68,7 @@ services:
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/oai_backend/checkBackendHealth.sh:/checkBackendHealth.sh
     ports:
       - '8081:8080'
+    restart: always
 
 
   oai-provider:
@@ -82,3 +85,4 @@ services:
       - ${OAI_INSTALL_DIRECTORY_ENV}/logs/oai_provider/:/usr/local/tomcat/logs
     ports:
       - '8080:8080'
+    restart: always
