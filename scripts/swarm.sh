@@ -2,7 +2,7 @@
 
 start_swarm() {
     echo "Starte Services..."
-    export $(grep -v '^#' .env | xargs)
+    export $(grep -v -e '^#' -e '^$' .env | xargs)
     docker stack deploy -c docker-compose4swarm.yml oai
     if [ $? -eq 0 ]; then
         echo "Services wurden erfolgreich gestartet."

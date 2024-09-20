@@ -2,7 +2,7 @@
 
 start_compose() {
     echo "Starte Container..."
-    export $(grep -v '^#' .env | xargs)
+    export $(grep -v -e '^#' -e '^$' .env | xargs)
     docker compose -f docker-compose.yml up -d
     if [ $? -eq 0 ]; then
         echo "Container wurden erfolgreich gestartet."
