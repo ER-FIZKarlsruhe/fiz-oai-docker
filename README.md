@@ -54,7 +54,6 @@
 
 # Running the application
   - Application can get started with or without Cassandra
-  - Startscripts set Environment from .env-File, so if versions etc change, you just need to adapt this file. 
   - With Cassandra:
     - *host:/$> cd OAI_INSTALL_DIRECTORY_ENV*
     - *host:/$> docker compose -f docker-compose-with-cassandra.yml up -d*
