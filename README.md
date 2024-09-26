@@ -57,14 +57,16 @@
   - With Cassandra:
     - *host:/$> cd OAI_INSTALL_DIRECTORY_ENV*
     - *host:/$> docker compose -f docker-compose-with-cassandra.yml up -d*
+    - *host:/$> docker compose -f docker-compose-with-cassandra.yml down*
   - Without Cassandra
     - *Depends on a running Cassandra, either in docker-network for swarm or on a host with port 9042*
     - *host:/$> cd OAI_INSTALL_DIRECTORY_ENV*  
     - *host:/$> docker compose -f docker-compose.yml up -d*
+    - *host:/$> docker compose -f docker-compose.yml down*
     - OR
     - *host:/$> docker stack deploy -c docker-compose4swarm.yml oai*
-
-NOTE: When using docker-swarm, no ports are opened. So you need an Webserver in an Docker-Container in the Network. 
+    - *host:/$> docker stack rm oai*
+      NOTE: When using docker-swarm, no ports are opened. So you need an Webserver in an Docker-Container in the Network. 
 Then proxyPass to the hostnames noted in docker-compose4swarm.yml
 
 # Getting started
