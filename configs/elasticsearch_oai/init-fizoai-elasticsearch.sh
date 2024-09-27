@@ -33,8 +33,8 @@ fi
 curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data "@item_mapping_es" -i 'http://elasticsearch-oai:9200/items1'
 curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' -i 'http://elasticsearch-oai:9200/items1/_alias/items'
 curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data '{"type":"fs","settings":{"location":"/usr/share/elasticsearch/backup","compress":true}}' -i 'http://elasticsearch-oai:9200/_snapshot/oai-backup'
-curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data '{"schedule": "0 30 1 * * ?","name": "<daily-snapshot-{now/d}>","repository": "oai-backup","config": {"indices": "*","include_global_state": true},"retention": {"expire_after": "30d","min_count": 5,"max_count": 10}}' -i 'http://elasticsearch-oai:9200/_slm/policy/daily-snapshot'
-curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data '{"schedule": "0 30 0 ? * SUN","name": "<weekly-snapshot-{now/d}>","repository": "oai-backup","config": {"indices": "*","include_global_state": true},"retention": {"expire_after": "90d","min_count": 5,"max_count": 10}}' -i 'http://elasticsearch-oai:9200/_slm/policy/weekly-snapshot'
+curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data '{"schedule": "0 30 1 * * ?","name": "<daily-snapshot-{now/d}>","repository": "oai-backup","config": {"indices": "*","include_global_state": true},"retention": {"expire_after": "30d","min_count": 5,"max_count": 30}}' -i 'http://elasticsearch-oai:9200/_slm/policy/daily-snapshot'
+curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data '{"schedule": "0 30 0 ? * SUN","name": "<weekly-snapshot-{now/d}>","repository": "oai-backup","config": {"indices": "*","include_global_state": true},"retention": {"expire_after": "90d","min_count": 5,"max_count": 15}}' -i 'http://elasticsearch-oai:9200/_slm/policy/weekly-snapshot'
 
 exit 0
 
