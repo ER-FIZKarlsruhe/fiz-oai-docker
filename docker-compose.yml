@@ -31,7 +31,7 @@ services:
 
   elasticsearch-oai-setup:
     hostname: elasticsearch-oai-setup
-    image: centos
+    image: ubuntu
     depends_on:
       elasticsearch-oai:
         condition: service_healthy
