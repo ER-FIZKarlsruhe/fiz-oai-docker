@@ -31,7 +31,7 @@ services:
 
   elasticsearch-oai-setup:
     hostname: elasticsearch-oai-setup
-    image: ubuntu
+    image: rockylinux:9
     depends_on:
       elasticsearch-oai:
         condition: service_healthy
