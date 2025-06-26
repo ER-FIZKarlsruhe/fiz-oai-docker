@@ -46,7 +46,7 @@ services:
         delay: 3s
         max_attempts: 2
         window: 240s
-    restart: always
+    restart: on-failure
 
   oai-backend:
     hostname: oai-backend

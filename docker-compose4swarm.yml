@@ -41,7 +41,7 @@ services:
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/wait-for-it.sh:/wait-for-it.sh:ro
     deploy:
       restart_policy:
-        condition: any
+        condition: on-failure
         delay: 10s
 
   oai-backend:
