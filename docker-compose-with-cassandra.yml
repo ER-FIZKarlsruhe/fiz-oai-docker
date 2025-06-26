@@ -1,8 +1,8 @@
 version: '3.3'
 services:
 
-  cassandra-oai:
-    hostname: cassandra-oai
+  cassandra:
+    hostname: cassandra
     image: cassandra:${OAI_CASSANDRA_VERSION_ENV}
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
@@ -21,8 +21,8 @@ services:
     hostname: cassandra-oai-setup
     image: cassandra:${OAI_CASSANDRA_VERSION_ENV}
     depends_on:
-      - cassandra-oai
-    command: ["/wait-for-it.sh","cassandra-oai:9042","-t","0","--", "sh", "/init-fizoai-database.sh"]
+      - cassandra
+    command: ["/wait-for-it.sh","cassandra:9042","-t","0","--", "sh", "/init-fizoai-database.sh"]
     volumes:
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/cassandra/init-fizoai-database.sh:/init-fizoai-database.sh:ro
       - ${OAI_INSTALL_DIRECTORY_ENV}/configs/cassandra/wait-for-it.sh:/wait-for-it.sh:ro
@@ -41,7 +41,7 @@ services:
       - ${OAI_INSTALL_DIRECTORY_ENV}/data/cassandra:/source_data
       - ${OAI_INSTALL_DIRECTORY_ENV}/data/cassandra-backup:/backup
     depends_on:
-      - cassandra-oai
+      - cassandra
     restart: always
 
 
@@ -75,7 +75,7 @@ services:
 
   elasticsearch-oai-setup:
     hostname: elasticsearch-oai-setup
-    image: centos
+    image: rockylinux:9
     depends_on:
       elasticsearch-oai:
         condition: service_healthy

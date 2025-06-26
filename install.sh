@@ -70,6 +70,7 @@ cp docker-compose.yml ${OAI_INSTALL_DIRECTORY_ENV}
 cp docker-compose4swarm.yml ${OAI_INSTALL_DIRECTORY_ENV}
 cp docker-compose-with-cassandra.yml ${OAI_INSTALL_DIRECTORY_ENV}
 cp ./configs/.env ${OAI_INSTALL_DIRECTORY_ENV}
+cp ./configs/.cassandra_dump_env ${OAI_INSTALL_DIRECTORY_ENV}
 
 #Set Environment
 touch -a /etc/environment
