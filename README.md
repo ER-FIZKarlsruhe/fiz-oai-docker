@@ -85,9 +85,9 @@ Check them and then execute them.
 ### Create formats
 The script examples/createFormats.sh shows you how to create formats via curl.
 
-### Create crosswalks (needs jq package)
+### Create/Update crosswalks (needs jq package)
 If you want to automatically transform your metadata into other formats, you can use crosswalks. 
-The commands in examples/createCrosswalks.sh shows you how Radar metadata can be transformed into oai_dc and datacite via XSLT.
+The commands in examples/createCrosswalks.sh and examples/updateCrosswalk.sh shows you how Radar metadata can be transformed into oai_dc and datacite via XSLT.
 
 ### Create items
 After creating at least the oai_dc format, you are able to send your metadata into the oai-backend.

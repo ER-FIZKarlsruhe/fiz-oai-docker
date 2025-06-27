@@ -13,9 +13,13 @@ printf "\n\nCreate Crosswalk radar2datacite\n\n"
 curl --noproxy '*' -X POST -H 'Content-Type: application/json' -i '@@OAI_EXTERNAL_BACKEND_URL@@/crosswalk' --data '{"name":"Radar2datacite","formatFrom":"radar","formatTo":"datacite","xsltStylesheet":'"$XSLT_RADAR_DATACITE"'}'
 
 
-#Read all crosswalk
+#Read all crosswalks
 #curl --noproxy '*' -X GET '@@OAI_EXTERNAL_BACKEND_URL@@/crosswalk'
 
 
 #Delete specific crosswalk
 #curl --noproxy '*' -v -X DELETE @@OAI_EXTERNAL_BACKEND_URL@@/crosswalk/Radar2OAI_DC_v09
+
+
+#Update specific crosswalk
+#curl --noproxy '*' -X PUT -H 'Content-Type: application/json' -i '@@OAI_EXTERNAL_BACKEND_URL@@/crosswalk' --data '{"name":"Radar2datacite","formatFrom":"radar","formatTo":"datacite","xsltStylesheet":'"$XSLT_RADAR_DATACITE"'}'
