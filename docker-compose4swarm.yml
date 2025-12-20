@@ -25,9 +25,7 @@ services:
     deploy:
       restart_policy:
         condition: any
-        delay: 5s
-        max_attempts: 5
-        window: 240s
+        delay: 10s
 
   elasticsearch-oai-setup:
     hostname: elasticsearch-oai-setup
@@ -44,9 +42,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-        delay: 5s
-        max_attempts: 5
-        window: 240s
+        delay: 10s
 
   oai-backend:
     hostname: oai-backend
@@ -66,10 +62,7 @@ services:
     deploy:
       restart_policy:
         condition: any
-        delay: 5s
-        max_attempts: 5
-        window: 240s
-
+        delay: 10s
 
   oai-provider:
     hostname: oai-provider
@@ -87,9 +80,7 @@ services:
     deploy:
       restart_policy:
         condition: any
-        delay: 5s
-        max_attempts: 5
-        window: 240s
+        delay: 10s
 
 networks:
   fizoai:
