@@ -92,6 +92,7 @@ sed -i "s|@@OAI_EXTERNAL_BACKEND_URL@@|${OAI_EXTERNAL_BACKEND_URL}|g" ${OAI_INST
 sed -i "s|@@OAI_EXTERNAL_BACKEND_URL@@|${OAI_EXTERNAL_BACKEND_URL}|g" ${OAI_INSTALL_DIRECTORY_ENV}/examples/createCrosswalks.sh
 sed -i "s|@@OAI_EXTERNAL_BACKEND_URL@@|${OAI_EXTERNAL_BACKEND_URL}|g" ${OAI_INSTALL_DIRECTORY_ENV}/examples/updateCrosswalk.sh
 sed -i "s|@@OAI_EXTERNAL_BACKEND_URL@@|${OAI_EXTERNAL_BACKEND_URL}|g" ${OAI_INSTALL_DIRECTORY_ENV}/examples/addItem.sh
+sed -i "s|@@OAI_EXTERNAL_BACKEND_URL@@|${OAI_EXTERNAL_BACKEND_URL}|g" ${OAI_INSTALL_DIRECTORY_ENV}/examples/createMultipleitems.sh
 
 ###############################################################################
 # Replace @@CASSANDRA_..@@ Values
