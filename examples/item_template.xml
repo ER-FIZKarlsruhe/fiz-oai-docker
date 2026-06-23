@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:radarDataset xmlns="http://radar-service.eu/schemas/descriptive/radar/v09/radar-elements"
+                  xmlns:ns2="http://radar-service.eu/schemas/descriptive/radar/v09/radar-dataset">
+
+    <identifier identifierType="DOI">__DOI__</identifier>
+
+    <alternateIdentifiers>
+        <alternateIdentifier alternateIdentifierType="1234567489777">Interne Nummer</alternateIdentifier>
+    </alternateIdentifiers>
+
+    <relatedIdentifiers>
+        <relatedIdentifier relatedIdentifierType="DOI" relationType="IsSupplementTo">
+            10.1001/456456
+        </relatedIdentifier>
+    </relatedIdentifiers>
+
+    <creators>
+        <creator>
+            <creatorName>Admin, Admin</creatorName>
+            <givenName>Admin</givenName>
+            <familyName>Admin</familyName>
+            <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">
+                1231-1231-1111
+            </nameIdentifier>
+            <creatorAffiliation>FIZ Karlsruhe</creatorAffiliation>
+        </creator>
+    </creators>
+
+    <contributors>
+        <contributor contributorType="DataCurator">
+            <contributorName>Müller, Hansi</contributorName>
+            <givenName>Hansi</givenName>
+            <familyName>Müller</familyName>
+        </contributor>
+    </contributors>
+
+    <title>Test zur Publikation 12072018</title>
+
+    <publicationYear>2018</publicationYear>
+    <language>eng</language>
+
+    <resource resourceType="Dataset"/>
+</ns2:radarDataset>
