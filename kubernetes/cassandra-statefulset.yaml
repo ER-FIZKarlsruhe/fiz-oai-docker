@@ -48,6 +48,37 @@ spec:
       # image runs as) can read/write the shared data volume.
       securityContext:
         fsGroup: 999
+      # cassandra:4.1.7's docker-entrypoint.sh chown's its config files on
+      # startup. ConfigMap/Secret volumes are always read-only in Kubernetes
+      # (regardless of subPath, defaultMode or UID), so mounting
+      # cassandra.yaml/cassandra-env.sh/jmxremote.* straight from them makes
+      # that chown fail with "Read-only file system" and crash the
+      # container. Copy them into a writable emptyDir first instead.
+      initContainers:
+        - name: copy-cassandra-config
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              set -ex
+              cp /config-map/cassandra.yaml /config-map/cassandra-env.sh /writable/
+              cp /jmx-access/jmxremote.access /writable/
+              cp /jmx-password/jmxremote.password /writable/
+              chown -R 999:999 /writable
+              chmod 600 /writable/jmxremote.password
+          volumeMounts:
+            - name: cassandra-config
+              mountPath: /config-map
+              readOnly: true
+            - name: cassandra-jmx-access
+              mountPath: /jmx-access
+              readOnly: true
+            - name: cassandra-jmx-password
+              mountPath: /jmx-password
+              readOnly: true
+            - name: cassandra-etc
+              mountPath: /writable
       containers:
         - name: cassandra
           image: cassandra:4.1.7
@@ -104,16 +135,19 @@ spec:
           volumeMounts:
             - name: cassandra-data
               mountPath: /var/lib/cassandra
-            - name: cassandra-config
+            # Sourced from the writable cassandra-etc emptyDir (populated by
+            # the copy-cassandra-config init container above), not directly
+            # from the ConfigMap/Secret - see the comment on initContainers.
+            - name: cassandra-etc
               mountPath: /etc/cassandra/cassandra.yaml
               subPath: cassandra.yaml
-            - name: cassandra-config
+            - name: cassandra-etc
               mountPath: /etc/cassandra/cassandra-env.sh
               subPath: cassandra-env.sh
-            - name: cassandra-jmx-access
+            - name: cassandra-etc
               mountPath: /opt/java/openjdk/lib/management/jmxremote.access
               subPath: jmxremote.access
-            - name: cassandra-jmx-password
+            - name: cassandra-etc
               mountPath: /etc/cassandra/jmxremote.password
               subPath: jmxremote.password
         - name: cassandra-backup
@@ -147,6 +181,8 @@ spec:
             secretName: cassandra-jmx-password
             defaultMode: 0600
         - name: cassandra-backup-logs
+          emptyDir: {}
+        - name: cassandra-etc
           emptyDir: {}
   volumeClaimTemplates:
     - metadata:
