@@ -85,6 +85,16 @@ spec:
           env:
             - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
               value: "true"
+            # cassandra-env.sh's calculate_heap_sizes() sizes the heap off
+            # `free -m`, which reports the node's total memory rather than
+            # this container's memory limit - on any reasonably sized node
+            # that yields an -Xmx well above 4Gi and OOMKills the container
+            # within seconds of startup. Setting MAX_HEAP_SIZE explicitly
+            # skips that auto-calculation. Keep it comfortably below
+            # resources.limits.memory below to leave room for off-heap
+            # memtables/compaction and OS page cache.
+            - name: MAX_HEAP_SIZE
+              value: "2G"
             # docker-entrypoint.sh of the official image sed-patches these
             # fields into cassandra.yaml at startup, overriding the static
             # 10.0.1.33 values baked into the mounted cassandra-config
