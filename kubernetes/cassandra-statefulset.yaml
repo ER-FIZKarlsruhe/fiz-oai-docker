@@ -95,6 +95,14 @@ spec:
             # memtables/compaction and OS page cache.
             - name: MAX_HEAP_SIZE
               value: "2G"
+            # cassandra-env.sh insists MAX_HEAP_SIZE and HEAP_NEWSIZE be set
+            # (or unset) in pairs - it only checks for G1 in the JVM_OPTS
+            # accumulated so far, before jvm-server.options (which actually
+            # enables G1 for Cassandra 4.x) is merged in, so it assumes CMS
+            # and refuses to start with only one of the two set. HEAP_NEWSIZE
+            # (-Xmn) is simply not applied later if G1 ends up active.
+            - name: HEAP_NEWSIZE
+              value: "400M"
             # docker-entrypoint.sh of the official image sed-patches these
             # fields into cassandra.yaml at startup, overriding the static
             # 10.0.1.33 values baked into the mounted cassandra-config
