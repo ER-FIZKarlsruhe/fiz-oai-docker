@@ -95,16 +95,31 @@ spec:
               memory: 3Gi
             limits:
               memory: 4Gi
+          # checkEsHealth.sh (mounted below, still used by other consumers
+          # such as the setup Job) curls the "elasticsearch-oai" *Service*
+          # name. Probing a pod's own Service ClusterIP from inside itself
+          # is a classic Kubernetes hairpin trap - many CNIs/kube-proxy
+          # modes can't route that traffic back to the same pod, so the
+          # curl hangs and (with the default 1s probe timeout) fails almost
+          # every time even though Elasticsearch is healthy. Probe via
+          # localhost instead, with a generous explicit timeout.
           startupProbe:
             exec:
-              command: ["/checkEsHealth.sh"]
+              command:
+                - sh
+                - -c
+                - curl -sf --max-time 5 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=1s' >/dev/null
             periodSeconds: 10
+            timeoutSeconds: 8
             failureThreshold: 60
           readinessProbe:
             exec:
-              command: ["/checkEsHealth.sh"]
+              command:
+                - sh
+                - -c
+                - curl -sf --max-time 5 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=1s' >/dev/null
             periodSeconds: 10
-            timeoutSeconds: 10
+            timeoutSeconds: 8
             failureThreshold: 20
           volumeMounts:
             - name: es-logs
