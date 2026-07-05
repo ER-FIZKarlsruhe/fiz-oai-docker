@@ -1,0 +1,165 @@
+# Cassandra (StatefulSet, single replica - matches the single-node setup in
+# docker-compose-with-cassandra.yml, replication_factor: 1) with the
+# cassandra-backup sidecar in the same Pod so both containers can share the
+# Cassandra data volume, exactly like the compose file's bind mount did.
+apiVersion: v1
+kind: Service
+metadata:
+  name: cassandra
+  namespace: fiz-oai
+  labels:
+    app.kubernetes.io/name: cassandra
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: cassandra
+  ports:
+    - name: intra-node
+      port: 7000
+    - name: jmx
+      port: 7199
+    - name: cql
+      port: 9042
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cassandra
+  namespace: fiz-oai
+  labels:
+    app.kubernetes.io/name: cassandra
+spec:
+  serviceName: cassandra
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cassandra
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cassandra
+    spec:
+      terminationGracePeriodSeconds: 120
+      imagePullSecrets:
+        - name: fiz-registry-credentials
+      # Makes freshly provisioned PVCs group-writable by 999 so both the
+      # cassandra container (runAsUser/Group 999, matching the compose
+      # "user: 999:999") and the cassandra-backup sidecar (whatever UID its
+      # image runs as) can read/write the shared data volume.
+      securityContext:
+        fsGroup: 999
+      containers:
+        - name: cassandra
+          image: cassandra:4.1.7
+          env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            # docker-entrypoint.sh of the official image sed-patches these
+            # fields into cassandra.yaml at startup, overriding the static
+            # 10.0.1.33 values baked into the mounted cassandra-config
+            # ConfigMap (see configmap-cassandra.yaml).
+            - name: CASSANDRA_LISTEN_ADDRESS
+              value: auto
+            - name: CASSANDRA_BROADCAST_ADDRESS
+              value: auto
+            - name: CASSANDRA_RPC_ADDRESS
+              value: 0.0.0.0
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: CASSANDRA_BROADCAST_RPC_ADDRESS
+              value: $(POD_IP)
+            - name: CASSANDRA_SEEDS
+              value: cassandra-0.cassandra.fiz-oai.svc.cluster.local
+          ports:
+            - name: intra-node
+              containerPort: 7000
+            - name: jmx
+              containerPort: 7199
+            - name: cql
+              containerPort: 9042
+          securityContext:
+            runAsUser: 999
+            runAsGroup: 999
+          startupProbe:
+            tcpSocket:
+              port: cql
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            tcpSocket:
+              port: cql
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: cql
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: "1"
+              memory: 2Gi
+            limits:
+              memory: 4Gi
+          volumeMounts:
+            - name: cassandra-data
+              mountPath: /var/lib/cassandra
+            - name: cassandra-config
+              mountPath: /etc/cassandra/cassandra.yaml
+              subPath: cassandra.yaml
+            - name: cassandra-config
+              mountPath: /etc/cassandra/cassandra-env.sh
+              subPath: cassandra-env.sh
+            - name: cassandra-jmx-access
+              mountPath: /opt/java/openjdk/lib/management/jmxremote.access
+              subPath: jmxremote.access
+            - name: cassandra-jmx-password
+              mountPath: /etc/cassandra/jmxremote.password
+              subPath: jmxremote.password
+        - name: cassandra-backup
+          image: docker.dev.fiz-karlsruhe.de/cassandra-backup:5.2
+          envFrom:
+            - secretRef:
+                name: cassandra-backup-env
+          env:
+            - name: JAVA_OPTS
+              value: "-Dlog4j2.formatMsgNoLookups=true"
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+          volumeMounts:
+            - name: cassandra-backup-logs
+              mountPath: /logs
+            - name: cassandra-data
+              mountPath: /source_data
+              readOnly: true
+            - name: cassandra-backup-data
+              mountPath: /backup
+      volumes:
+        - name: cassandra-config
+          configMap:
+            name: cassandra-config
+        - name: cassandra-jmx-access
+          configMap:
+            name: cassandra-jmx-access
+            defaultMode: 0600
+        - name: cassandra-jmx-password
+          secret:
+            secretName: cassandra-jmx-password
+            defaultMode: 0600
+        - name: cassandra-backup-logs
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: cassandra-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 50Gi
+    - metadata:
+        name: cassandra-backup-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 50Gi

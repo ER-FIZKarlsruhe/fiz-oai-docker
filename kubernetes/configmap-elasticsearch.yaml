@@ -1,0 +1,201 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-config
+  namespace: fiz-oai
+data:
+  elasticsearch.yml: |
+    # ======================== Elasticsearch Configuration =========================
+    #
+    # NOTE: Elasticsearch comes with reasonable defaults for most settings.
+    #       Before you set out to tweak and tune the configuration, make sure you
+    #       understand what are you trying to accomplish and the consequences.
+    #
+    # The primary way of configuring a node is via this file. This template lists
+    # the most important settings you may want to configure for a production cluster.
+    #
+    # Please consult the documentation for further information on configuration options:
+    # https://www.elastic.co/guide/en/elasticsearch/reference/index.html
+    #
+    # ---------------------------------- Cluster -----------------------------------
+    #
+    # Use a descriptive name for your cluster:
+    #
+    cluster.name: oai-cluster
+    #
+    # ------------------------------------ Node ------------------------------------
+    #
+    # Use a descriptive name for the node:
+    #
+    node.name: elasticsearch-oai-master
+    #
+    # Add custom attributes to the node:
+    #
+    #node.attr.rack: r1
+    #
+    # ----------------------------------- Paths ------------------------------------
+    #
+    # Path to directory where to store the data (separate multiple locations by comma):
+    #
+    path.data: /usr/share/elasticsearch/es-data
+    #
+    # Path to log files:
+    #
+    path.logs: /usr/share/elasticsearch/logs
+    #
+    # Path to backups:
+    #
+    path.repo: /usr/share/elasticsearch/backup
+    
+    #
+    # ----------------------------------- Memory -----------------------------------
+    #
+    # Lock the memory on startup:
+    #
+    #bootstrap.memory_lock: true
+    #
+    # Make sure that the heap size is set to about half the memory available
+    # on the system and that the owner of the process is allowed to use this
+    # limit.
+    #
+    # Elasticsearch performs poorly when the system is swapping the memory.
+    #
+    # ---------------------------------- Network -----------------------------------
+    #
+    # Set the bind address to a specific IP (IPv4 or IPv6):
+    #
+    network.host: 0.0.0.0
+    #
+    # Set a custom port for HTTP:
+    #
+    http.port: 9200
+    #
+    transport.port: 9300
+    #
+    # For more information, consult the network module documentation.
+    #
+    # --------------------------------- Discovery ----------------------------------
+    #
+    # Pass an initial list of hosts to perform discovery when this node is started:
+    # The default list of hosts is ["127.0.0.1", "[::1]"]
+    #
+    #discovery.seed_hosts: ["host1", "host2"]
+    #
+    # Bootstrap the cluster using an initial set of master-eligible nodes:
+    #
+    #cluster.initial_master_nodes: ["elasticsearch-oai-master"]
+    #
+    # For more information, consult the discovery and cluster formation module documentation.
+    #
+    # ---------------------------------- Gateway -----------------------------------
+    #
+    # Block initial recovery after a full cluster restart until N nodes are started:
+    #
+    #gateway.recover_after_nodes: 3
+    #
+    # For more information, consult the gateway module documentation.
+    #
+    # ---------------------------------- Various -----------------------------------
+    #
+    # Require explicit names when deleting indices:
+    #
+    #action.destructive_requires_name: true
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-scripts
+  namespace: fiz-oai
+data:
+  checkEsHealth.sh: |
+    #!/bin/bash
+    
+    #Check if Elasticsearch Health-Status is green (returns status-code 200)
+    URL_GREEN="http://elasticsearch-oai:9200/_cluster/health?wait_for_status=green&timeout=1s"
+    URL_YELLOW="http://elasticsearch-oai:9200/_cluster/health?wait_for_status=yellow&timeout=1s"
+    
+    response_green=$(curl -L --noproxy '*' --write-out %{http_code} --silent --output /dev/null $URL_GREEN)
+    if [[ "$response_green" -eq 200 ]]; then
+      echo "Elasticsearch Status is GREEN"
+      exit 0
+    else
+      response_yellow=$(curl -L --noproxy '*' --write-out %{http_code} --silent --output /dev/null $URL_YELLOW)
+      if [[ "$response_yellow" -eq 200 ]]; then
+        echo "Elasticsearch Status is YELLOW"
+        exit 0
+      fi
+      echo "Waiting for Elasticsearch Status GREEN"
+      exit 1
+    fi
+    
+
+  init-fizoai-elasticsearch.sh: |
+    #!/bin/sh
+    
+    URL_GREEN="http://elasticsearch-oai:9200/_cluster/health?wait_for_status=green&timeout=1s"
+    URL_YELLOW="http://elasticsearch-oai:9200/_cluster/health?wait_for_status=yellow&timeout=1s"
+    
+    MAX_WAIT=240
+    i=0
+    
+    #Wait for Elasticsearch Health-Status green (returns status-code 200) for MAX_WAIT Seconds
+    while [ $i -le $MAX_WAIT ]; do
+      echo "Check ES-Status"
+      response=$(curl -L --noproxy '*' --write-out %{http_code} --silent --output /dev/null $URL_GREEN)
+      if [[ "$response" -eq 200 ]]; then
+        echo "Elasticsearch Status is GREEN"
+        break;
+      fi
+      response=$(curl -L --noproxy '*' --write-out %{http_code} --silent --output /dev/null $URL_YELLOW)
+      if [[ "$response" -eq 200 ]]; then
+        echo "Elasticsearch Status is YELLOW"
+        break;
+      fi
+      echo "Elasticsearch Status is not GREEN or YELLOW"
+      sleep 1
+      i=$((i + 1))
+    done
+    
+    #Check if index-mappings already exist. Otherwise create them.
+    status_code=$(curl -L --write-out %{http_code} --noproxy '*' --silent --output /dev/null http://elasticsearch-oai:9200/items/_search)
+    if [[ "$status_code" -ne 404 ]] ; then
+      echo "Skip Index-Mappings creation"
+      exit 0
+    fi
+    curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data "@item_mapping_es_v7" -i 'http://elasticsearch-oai:9200/items1'
+    curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' -i 'http://elasticsearch-oai:9200/items1/_alias/items'
+    curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data '{"type":"fs","settings":{"location":"/usr/share/elasticsearch/backup","compress":true}}' -i 'http://elasticsearch-oai:9200/_snapshot/oai-backup'
+    curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data '{"schedule": "0 30 1 * * ?","name": "<daily-snapshot-{now/d}>","repository": "oai-backup","config": {"indices": "*","include_global_state": true},"retention": {"expire_after": "30d","min_count": 5,"max_count": 30}}' -i 'http://elasticsearch-oai:9200/_slm/policy/daily-snapshot'
+    curl -v -L --noproxy '*' -X PUT -H 'Content-Type: application/json' --data '{"schedule": "0 30 0 ? * SUN","name": "<weekly-snapshot-{now/d}>","repository": "oai-backup","config": {"indices": "*","include_global_state": true},"retention": {"expire_after": "90d","min_count": 5,"max_count": 15}}' -i 'http://elasticsearch-oai:9200/_slm/policy/weekly-snapshot'
+    
+    exit 0
+    
+
+  item_mapping_es_v7: |
+    {
+      "mappings": {
+        "properties": {
+            "datestamp": {
+                "type": "date",
+                "format": "yyyy-MM-dd'T'HH:mm:ss'Z'"
+            },
+            "deleteFlag": {
+                "type": "boolean"
+            },
+            "formats": {
+                "type": "keyword"
+            },
+            "sets": {
+                "type": "keyword"
+            },
+            "identifier": {
+                "type": "keyword",
+                "doc_values": true
+            },
+            "ingestFormat": {
+                "type": "keyword"
+            }
+        }
+      }
+    }

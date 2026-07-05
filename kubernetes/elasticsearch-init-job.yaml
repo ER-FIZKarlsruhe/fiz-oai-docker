@@ -1,0 +1,35 @@
+# Equivalent of the elasticsearch-oai-setup one-shot compose service:
+# creates the "items" index + alias and the daily/weekly snapshot policies.
+#
+# NOTE: the original docker-compose-with-cassandra.yml mounted
+# item_mapping_es_v7 at container path /item_mapping_es, while
+# init-fizoai-elasticsearch.sh references it by the relative filename
+# "item_mapping_es_v7" (cwd "/") - those two never matched. This manifest
+# mounts it at /item_mapping_es_v7 instead, which is what the script actually
+# needs.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: elasticsearch-oai-setup
+  namespace: fiz-oai
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: elasticsearch-oai-setup
+          image: rockylinux:9
+          workingDir: /
+          command: ["sh", "/scripts/init-fizoai-elasticsearch.sh"]
+          volumeMounts:
+            - name: elasticsearch-scripts
+              mountPath: /scripts/init-fizoai-elasticsearch.sh
+              subPath: init-fizoai-elasticsearch.sh
+            - name: elasticsearch-scripts
+              mountPath: /item_mapping_es_v7
+              subPath: item_mapping_es_v7
+      volumes:
+        - name: elasticsearch-scripts
+          configMap:
+            name: elasticsearch-scripts

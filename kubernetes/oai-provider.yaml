@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: oai-provider
+  namespace: fiz-oai
+  labels:
+    app.kubernetes.io/name: oai-provider
+spec:
+  selector:
+    app.kubernetes.io/name: oai-provider
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-provider
+  namespace: fiz-oai
+  labels:
+    app.kubernetes.io/name: oai-provider
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: oai-provider
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: oai-provider
+    spec:
+      imagePullSecrets:
+        - name: fiz-registry-credentials
+      initContainers:
+        - name: wait-for-oai-backend
+          image: curlimages/curl:8.9.1
+          command:
+            - sh
+            - -c
+            - |
+              until curl -sf -o /dev/null http://oai-backend:8080/oai-backend/info/version; do
+                echo "waiting for oai-backend"
+                sleep 5
+              done
+      containers:
+        - name: oai-provider
+          image: docker.dev.fiz-karlsruhe.de/oai-provider:1.6.2
+          env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            - name: CATALINA_OPTS
+              value: "-Dlog4j2.formatMsgNoLookups=true -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true"
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /oai/
+              port: http
+            periodSeconds: 10
+            failureThreshold: 20
+          livenessProbe:
+            httpGet:
+              path: /oai/
+              port: http
+            periodSeconds: 30
+            failureThreshold: 6
+          volumeMounts:
+            - name: oai-provider-config
+              mountPath: /usr/local/tomcat/conf/oaicat.properties
+              subPath: oaicat.properties
+              readOnly: true
+            - name: oai-provider-logs
+              mountPath: /usr/local/tomcat/logs
+      volumes:
+        - name: oai-provider-config
+          configMap:
+            name: oai-provider-config
+        - name: oai-provider-logs
+          emptyDir: {}
