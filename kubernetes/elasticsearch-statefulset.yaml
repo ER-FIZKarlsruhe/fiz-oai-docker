@@ -108,7 +108,7 @@ spec:
               command:
                 - sh
                 - -c
-                - curl -sf --max-time 5 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=1s' >/dev/null
+                - curl -s -o /dev/null -w "%{http_code}" --max-time 5 'http://localhost:9200/_cluster/health?wait_for_status=yellow' | grep -q "200"
             periodSeconds: 10
             timeoutSeconds: 8
             failureThreshold: 60

@@ -1,10 +1,3 @@
-# Requires the ingress-nginx controller (https://kubernetes.github.io/ingress-nginx/):
-#   helm upgrade --install ingress-nginx ingress-nginx \
-#     --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace
-#
-# oai-provider owns "/oai" (see Identify.repositoryName / OAIHandler config in
-# oaicat.properties) and oai-backend owns "/oai-backend" - both context paths
-# are baked into the Tomcat WARs, so no rewrite-target is used here.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -14,12 +7,8 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
   ingressClassName: nginx
-  # tls:
-  #   - hosts: ["oai.example.org"]
-  #     secretName: fiz-oai-tls
   rules:
-    - host: oai.example.org
-      http:
+    - http:
         paths:
           - path: /oai
             pathType: Prefix

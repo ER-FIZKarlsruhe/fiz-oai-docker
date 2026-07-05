@@ -76,13 +76,17 @@ spec:
             - name: http
               containerPort: 8080
           readinessProbe:
-            exec:
-              command: ["/checkBackendHealth.sh"]
+            httpGet:
+              path: /oai-backend/info/version
+              port: 8080
+            initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 20
           livenessProbe:
-            exec:
-              command: ["/checkBackendHealth.sh"]
+            httpGet:
+              path: /oai-backend/info/version
+              port: 8080
+            initialDelaySeconds: 60
             periodSeconds: 30
             failureThreshold: 6
           volumeMounts:
