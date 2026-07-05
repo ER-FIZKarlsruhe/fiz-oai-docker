@@ -9,7 +9,7 @@ data:
     
     # Uncomment this line if you want to include an XSL stylesheet reference
     # in the OAI response so they can be rendered into HTML by browsers.
-    OAIHandler.styleSheet=/oai/stylesheet
+    OAIHandler.styleSheet=http://127.0.0.1:8080/oai/stylesheet
     
     #For integration testing, the backend is provided by mockserver. The server is started in OaiHandlerIT
     FizOaiBackend.baseURL=http://oai-backend:8080/oai-backend/
