@@ -80,6 +80,15 @@ transport.port: 9300
 #
 # For more information, consult the discovery and cluster formation module documentation.
 #
+# ------------------------------------ Security ---------------------------------
+#
+# Elasticsearch 8+ enables security (authentication and auto-generated TLS certs on
+# the HTTP layer) by default. This deployment has no credentials or certs wired into
+# the backend/provider or the setup scripts, so security is disabled to keep the
+# previous plain-HTTP, no-auth behaviour of Elasticsearch 7:
+#
+xpack.security.enabled: false
+#
 # ---------------------------------- Gateway -----------------------------------
 #
 # Block initial recovery after a full cluster restart until N nodes are started:
