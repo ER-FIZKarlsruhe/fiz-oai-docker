@@ -65,7 +65,7 @@ mkdir -p ${OAI_INSTALL_DIRECTORY_ENV}/data/elasticsearch_oai/backup/
 mkdir -p ${OAI_INSTALL_DIRECTORY_ENV}/logs/elasticsearch_oai/
 
 cp ./configs/elasticsearch_oai/oai-elasticsearch.yml ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
-cp ./configs/elasticsearch_oai/item_mapping_es_v* ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
+cp ./configs/elasticsearch_oai/item_mapping_es ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
 cp ./configs/elasticsearch_oai/init-fizoai-elasticsearch.sh ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
 cp ./configs/wait-for-it.sh ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
 cp ./configs/elasticsearch_oai/checkEsHealth.sh ${OAI_INSTALL_DIRECTORY_ENV}/configs/elasticsearch_oai/
