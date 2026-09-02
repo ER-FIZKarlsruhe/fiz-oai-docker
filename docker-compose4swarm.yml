@@ -29,7 +29,7 @@ services:
 
   elasticsearch-oai-setup:
     hostname: elasticsearch-oai-setup
-    image: rockylinux:9
+    image: curlimages/curl:latest
     depends_on:
       - elasticsearch-oai
     command: ["sh", "/init-fizoai-elasticsearch.sh"]
